@@ -171,7 +171,6 @@ def add_site():
         log_event('site_added', site_id=site_id, user_id=session['user_id'])
         flash('Сайт добавлен!', 'success')
         return redirect(url_for('auth.dashboard'))
-        return redirect(url_for('auth.dashboard'))
 
     return render_template('pages/add_site.html')
 
