@@ -1,1 +1,246 @@
-{% extends "base.html" %}{% block content %}<h1 class="text-center mt-2">AI Visibility Optimizer</h1><p class="text-muted text-center">Ваш бизнес в нейропоиске</p>{% endblock %}
+{% extends "base.html" %}
+{% block title %}AI Visibility Optimizer — Алиса видит{% endblock %}
+{% block content %}
+<style>
+    .hero { text-align: center; padding: 50px 16px 30px; }
+    .hero h1 { line-height: 1.15; }
+    .hero .neon-text { color: var(--neon); text-shadow: 0 0 20px rgba(192,132,252,0.5); }
+    .hero .subtitle {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        max-width: 520px;
+        margin: 12px auto 24px;
+        font-family: var(--font-mono);
+    }
+
+    .audit-card { max-width: 600px; margin: 0 auto 40px; }
+
+    .score-ring { width: 90px; height: 90px; margin: 0 auto 10px; position: relative; }
+    .score-ring svg { transform: rotate(-90deg); }
+    .score-ring .bg-circle { fill: none; stroke: rgba(140,120,255,0.15); stroke-width: 4; }
+    .score-ring .progress-circle { fill: none; stroke: url(#neonGrad); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 1s ease-out; }
+    .score-number { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--font-mono); font-size: 1.5rem; font-weight: 900; color: var(--text-bright); }
+
+    .loss-text { color: var(--danger); font-weight: 700; font-size: 0.85rem; margin-top: 4px; }
+
+    .show-more-btn {
+        background: transparent; border: 1px solid var(--border); color: var(--text-muted);
+        padding: 8px 16px; border-radius: var(--radius-sm); cursor: pointer;
+        font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; margin-top: 8px;
+        transition: var(--transition);
+    }
+    .show-more-btn:hover { border-color: var(--neon); color: var(--neon); }
+
+    .tariff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 780px; margin: 0 auto 50px; }
+    .tariff-card { text-align: center; padding: 24px 14px 20px; display: flex; flex-direction: column; }
+    .tariff-card.featured { border-color: var(--border-active); box-shadow: 0 0 35px rgba(124,58,237,0.1); }
+    .tariff-badge { margin-bottom: 8px; min-height: 20px; }
+    .tariff-price { font-family: var(--font-mono); font-size: 1.8rem; font-weight: 900; margin: 6px 0; min-height: 2.2rem; }
+    .tariff-name { font-family: var(--font-mono); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; min-height: 1.2rem; }
+    .tariff-card.featured .tariff-name { color: var(--neon); }
+    .tariff-features { color: var(--text-muted); font-size: 0.75rem; line-height: 1.5; margin: 8px 0 16px; flex: 1; min-height: 60px; }
+    .tariff-card .btn { margin-top: auto; }
+
+    .btn-cyber-pulse {
+        background: transparent; border: 1px solid var(--neon-soft); color: var(--neon-soft);
+        position: relative; overflow: hidden; font-weight: 700;
+    }
+    .btn-cyber-pulse::before, .btn-cyber-pulse::after {
+        content: ''; position: absolute; top: 0; width: 50%; height: 100%;
+        background: linear-gradient(90deg, rgba(192,132,252,0.3), transparent);
+        animation: cyberConverge 2s ease-in-out infinite;
+    }
+    .btn-cyber-pulse::before { left: -50%; }
+    .btn-cyber-pulse::after { right: -50%; animation-delay: 1s; transform: scaleX(-1); }
+    @keyframes cyberConverge {
+        0% { transform: translateX(0); opacity: 0; }
+        40% { opacity: 1; } 60% { opacity: 1; }
+        100% { transform: translateX(100%); opacity: 0; }
+    }
+    .btn-cyber-pulse:hover { box-shadow: 0 0 20px rgba(192,132,252,0.35), 0 0 2px rgba(192,132,252,0.5) inset; color: #fff; border-color: var(--neon); }
+
+    .btn-neon-premium {
+        background: var(--gradient-btn); color: var(--text-bright); border: 2px solid var(--neon);
+        position: relative; overflow: hidden; font-weight: 700;
+        animation: neonGlow 2s ease-in-out infinite;
+    }
+    @keyframes neonGlow {
+        0%,100% { box-shadow: 0 0 12px rgba(192,132,252,0.3), 0 0 2px rgba(255,255,255,0.1) inset; }
+        50% { box-shadow: 0 0 28px rgba(192,132,252,0.55), 0 0 6px rgba(192,132,252,0.35) inset, 0 0 50px rgba(192,132,252,0.15); }
+    }
+    .btn-neon-premium::after {
+        content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%);
+        animation: diagonalSweep 3s ease-in-out infinite;
+    }
+    @keyframes diagonalSweep {
+        0% { transform: translateX(-100%) translateY(-100%); }
+        100% { transform: translateX(100%) translateY(100%); }
+    }
+
+    .btn-soft-glow {
+        background: var(--gradient-btn); color: var(--text-bright); border: 1px solid rgba(192,132,252,0.3);
+        position: relative; overflow: hidden; font-weight: 700;
+    }
+    .btn-soft-glow::after {
+        content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%);
+        animation: diagonalSweep 3.5s ease-in-out infinite;
+    }
+    .btn-soft-glow:hover { box-shadow: 0 0 20px rgba(124,58,237,0.35); }
+
+    @media (max-width: 768px) {
+        .tariff-grid { grid-template-columns: 1fr; max-width: 320px; }
+        .hero { padding: 30px 8px 20px; }
+        .audit-card { margin: 0 0 30px; }
+    }
+</style>
+
+<div class="hero">
+    <h1><span class="neon-text">Алиса</span> видит<br>твой бизнес?</h1>
+    <p class="subtitle">Нейро-карточка за 24 часа. Без правок на сайте.</p>
+    <div class="flex flex-center flex-wrap" style="gap:8px;">
+        <a href="/register" class="btn btn-primary">Активировать</a>
+        <a href="/login" class="btn btn-ghost">Вход</a>
+    </div>
+</div>
+
+<div class="card audit-card">
+    <h2 style="text-align:center;">Сканирование</h2>
+    <p class="text-muted text-center mb-2 text-sm">Введи URL — узнай нейро-видимость</p>
+    <form id="auditForm">
+        <div class="flex" style="gap:6px;">
+            <input type="text" class="form-input" id="urlInput" placeholder="site.ru" required>
+            <button type="submit" class="btn btn-cyber-pulse">Сканировать</button>
+        </div>
+    </form>
+    <div id="loadingBlock" style="display:none; text-align:center; padding:30px 0;">
+        <div style="width:30px;height:30px;border:2px solid var(--border);border-top-color:var(--neon);border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto 12px;"></div>
+        <p class="text-muted text-sm">Анализ...</p>
+    </div>
+    <div id="resultBlock" style="display:none;">
+        <div class="score-ring">
+            <svg width="90" height="90" viewBox="0 0 90 90">
+                <defs><linearGradient id="neonGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>
+                <circle class="bg-circle" cx="45" cy="45" r="38"/>
+                <circle class="progress-circle" id="progressCircle" cx="45" cy="45" r="38" stroke-dasharray="238.8" stroke-dashoffset="238.8"/>
+            </svg>
+            <div class="score-number" id="scoreNumber">0%</div>
+        </div>
+        <p class="text-center mb-1 text-sm" id="scoreMessage"></p>
+        <p class="text-center loss-text" id="lossText" style="display:none;"></p>
+        <div class="grid-2 mb-2">
+            <div class="card" style="text-align:center;padding:10px;"><div style="font-size:1.2rem;font-weight:800;color:var(--neon);" id="pagesCount">0</div><div class="text-muted text-sm">страниц</div></div>
+            <div class="card" style="text-align:center;padding:10px;"><div style="font-size:1.2rem;font-weight:800;color:var(--neon);" id="faqCount">0</div><div class="text-muted text-sm">FAQ</div></div>
+        </div>
+        <div id="faqSection" style="display:none;">
+            <h3 class="mb-2 text-sm">Сгенерированные FAQ</h3>
+            <div id="faqList"></div>
+            <div class="text-center">
+                <button class="show-more-btn" id="showMoreFaq" style="display:none;" onclick="toggleFaq()">Показать ещё <span id="faqRemaining">7</span> вопросов</button>
+            </div>
+        </div>
+        <div class="text-center mt-2">
+            <a href="/register" class="btn btn-soft-glow">Подключить (499 ₽/мес)</a>
+            <p class="text-muted text-sm mt-1">7 дней бесплатно</p>
+        </div>
+    </div>
+</div>
+
+<div class="tariff-grid">
+    <div class="card tariff-card featured">
+        <div class="tariff-badge"><span class="badge badge-trial">Пробный</span></div>
+        <div class="tariff-price">0 ₽</div>
+        <div class="tariff-name">7 дней</div>
+        <div class="tariff-features">1 сайт<br>Без скачивания FAQ</div>
+        <a href="/register" class="btn btn-cyber-pulse w-full">Выбрать</a>
+    </div>
+    <div class="card tariff-card">
+        <div class="tariff-badge">&nbsp;</div>
+        <div class="tariff-price">499 ₽</div>
+        <div class="tariff-name">Базовый</div>
+        <div class="tariff-features">5 сайтов<br>FAQ + Нейро-карточка<br>Чат на сайте</div>
+        <a href="/register" class="btn btn-neon-premium w-full">Выбрать</a>
+    </div>
+    <div class="card tariff-card">
+        <div class="tariff-badge">&nbsp;</div>
+        <div class="tariff-price">999 ₽</div>
+        <div class="tariff-name">Профессиональный</div>
+        <div class="tariff-features">20 сайтов<br>Всё + VK Mini App<br>UGC-размещение</div>
+        <a href="/register" class="btn btn-primary w-full">Выбрать</a>
+    </div>
+</div>
+
+<script>
+    let allFaq = [];
+    let showingAll = false;
+
+    document.getElementById('auditForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const url = document.getElementById('urlInput').value;
+        document.getElementById('loadingBlock').style.display = 'block';
+        document.getElementById('resultBlock').style.display = 'none';
+        try {
+            const formData = new FormData(); formData.append('url', url);
+            const response = await fetch('/demo', { method: 'POST', body: formData });
+            const data = await response.json();
+            document.getElementById('loadingBlock').style.display = 'none';
+            document.getElementById('resultBlock').style.display = 'block';
+            if (data.success) {
+                const score = data.aeo_score || 0;
+                const circle = document.getElementById('progressCircle');
+                circle.style.strokeDashoffset = 238.8 - (score / 100) * 238.8;
+                let current = 0;
+                const step = score / 30;
+                const counter = setInterval(() => {
+                    current += step;
+                    if (current >= score) { current = score; clearInterval(counter); }
+                    document.getElementById('scoreNumber').textContent = Math.round(current) + '%';
+                }, 25);
+                document.getElementById('scoreMessage').textContent = score >= 70 ? 'Высокая видимость' : score >= 40 ? 'Требуется оптимизация' : 'Критически низкая';
+                const loss = Math.round((100 - score) * 5);
+                const lossEl = document.getElementById('lossText');
+                if (score < 70) {
+                    lossEl.textContent = 'Вы теряете ~' + loss + ' клиентов в месяц';
+                    lossEl.style.display = 'block';
+                } else {
+                    lossEl.style.display = 'none';
+                }
+                document.getElementById('pagesCount').textContent = data.pages_count || 0;
+                document.getElementById('faqCount').textContent = (data.faq || []).length;
+                allFaq = data.faq || [];
+                showingAll = false;
+                renderFaq(allFaq.slice(0, 3));
+                const showMoreBtn = document.getElementById('showMoreFaq');
+                if (allFaq.length > 3) {
+                    document.getElementById('faqRemaining').textContent = allFaq.length - 3;
+                    showMoreBtn.style.display = 'inline-block';
+                } else {
+                    showMoreBtn.style.display = 'none';
+                }
+                document.getElementById('faqSection').style.display = allFaq.length > 0 ? 'block' : 'none';
+            }
+        } catch (error) {
+            document.getElementById('loadingBlock').style.display = 'none';
+            document.getElementById('resultBlock').style.display = 'block';
+            document.getElementById('scoreMessage').textContent = 'Сервер просыпается. Повтори.';
+        }
+    });
+
+    function renderFaq(faqSubset) {
+        const faqList = document.getElementById('faqList');
+        faqList.innerHTML = faqSubset.map(item => `<div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q"><span>${item.q}</span><span>▾</span></div><div class="faq-a">${item.a}</div></div>`).join('');
+    }
+
+    function toggleFaq() {
+        showingAll = !showingAll;
+        if (showingAll) {
+            renderFaq(allFaq);
+            document.getElementById('showMoreFaq').textContent = 'Скрыть';
+        } else {
+            renderFaq(allFaq.slice(0, 3));
+            document.getElementById('showMoreFaq').innerHTML = 'Показать ещё <span id="faqRemaining">' + (allFaq.length - 3) + '</span> вопросов';
+        }
+    }
+</script>
+{% endblock %}
