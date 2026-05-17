@@ -14,22 +14,13 @@ def generate_faq(title, text, phones, emails):
         return _fallback_faq(title, phones, emails)
 
     prompt = (
-        f"Сгенерируй 10 вопросов и ответов для FAQ сайта "{title}". "
-        "Используй ТОЛЬКО информацию из текста сайта. Пиши строго на русском языке.
-
-"
-        "Формат вывода (каждый вопрос и ответ с новой строки):
-"
-        "Вопрос: <текст вопроса>
-"
-        "Ответ: <текст ответа>
-
-"
-        "Категории: о компании/услугах, цены, доставка, контакты, гарантии, как заказать.
-
-"
-        f"Текст сайта:
-{text[:4000]}"
+        f"Сгенерируй 10 вопросов и ответов для FAQ сайта \"{title}\". "
+        "Используй ТОЛЬКО информацию из текста сайта. Пиши строго на русском языке.\n\n"
+        "Формат вывода (каждый вопрос и ответ с новой строки):\n"
+        "Вопрос: <текст вопроса>\n"
+        "Ответ: <текст ответа>\n\n"
+        "Категории: о компании/услугах, цены, доставка, контакты, гарантии, как заказать.\n\n"
+        f"Текст сайта:\n{text[:4000]}"
     )
 
     try:
@@ -50,22 +41,18 @@ def generate_faq(title, text, phones, emails):
             timeout=30
         )
         data = resp.json()
-        print(f"YANDEX_RESPONSE: {json.dumps(data, ensure_ascii=False)[:500]}", flush=True)
-
         if "result" in data:
             full_text = data["result"]["alternatives"][0]["message"]["text"]
             return _parse_faq(full_text, title, phones, emails)
     except Exception as e:
-        print(f"FAQ error: {e}", flush=True)
+        print(f"FAQ error: {e}")
 
     return _fallback_faq(title, phones, emails)
 
 
 def _parse_faq(raw_text, title, phones, emails):
-    """Гибкий парсер: ищет пары Вопрос/Ответ или Q/A или строки с двоеточием"""
     qa_list = []
-    lines = raw_text.split('
-')
+    lines = raw_text.split('\n')
     current_q = None
     current_a = []
 
@@ -74,12 +61,10 @@ def _parse_faq(raw_text, title, phones, emails):
         if not line:
             continue
 
-        # Ищем начало вопроса
         q_match = re.match(r'(?:Вопрос|Q|В)\s*[:.]?\s*(.*)', line, re.IGNORECASE)
         a_match = re.match(r'(?:Ответ|A|О)\s*[:.]?\s*(.*)', line, re.IGNORECASE)
 
         if q_match:
-            # Сохраняем предыдущую пару
             if current_q and current_a:
                 qa_list.append({'q': current_q, 'a': ' '.join(current_a)})
             current_q = q_match.group(1).strip()
@@ -88,11 +73,9 @@ def _parse_faq(raw_text, title, phones, emails):
             if current_q:
                 current_a.append(a_match.group(1).strip())
         else:
-            # Если строка не похожа на вопрос/ответ, но есть текущий вопрос, считаем продолжением ответа
             if current_q and line:
                 current_a.append(line)
 
-    # Сохраняем последнюю пару
     if current_q and current_a:
         qa_list.append({'q': current_q, 'a': ' '.join(current_a)})
 
@@ -103,7 +86,6 @@ def _parse_faq(raw_text, title, phones, emails):
 
 
 def _fallback_faq(title, phones, emails):
-    """Заглушка, если генерация не удалась"""
     faq = [{'q': 'Чем вы занимаетесь?', 'a': f'{title} — мы работаем для вас.'}]
     if phones:
         faq.append({'q': 'Как с вами связаться?', 'a': f'Позвоните: {phones[0]}'})
