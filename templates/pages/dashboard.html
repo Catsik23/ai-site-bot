@@ -1,1 +1,41 @@
-{% extends "base.html" %}{% block content %}<h1>Дашборд</h1>{% endblock %}
+{% extends "base.html" %}
+{% block title %}Дашборд — AI Visibility Optimizer{% endblock %}
+{% block content %}
+<div class="nav">
+    <a href="/dashboard" class="nav-brand"><span>AI</span> Visibility</a>
+    <div class="nav-links">
+        <a href="/dashboard" class="nav-link active">Дашборд</a>
+        <a href="/dashboard/sites/new" class="nav-link">+ Добавить сайт</a>
+        <a href="/dashboard/settings" class="nav-link">Настройки</a>
+        <a href="/logout" class="nav-link btn-danger">Выйти</a>
+    </div>
+</div>
+
+<h1>Мои сайты</h1>
+
+{% if sites %}
+<div class="grid-2 mt-3">
+    {% for site in sites %}
+    <a href="/dashboard/sites/{{ site.id }}" style="text-decoration:none;">
+        <div class="card">
+            <div class="flex-between mb-1">
+                <strong>{{ site.domain or site.url[:40] }}</strong>
+                {% if site.neuro_card_active %}
+                    <span class="badge badge-active">Активна</span>
+                {% else %}
+                    <span class="badge badge-paused">Приостановлена</span>
+                {% endif %}
+            </div>
+            <div class="text-muted text-sm">{{ site.site_type or 'general' }} • FAQ: {{ (site.faq or [])|length if site.faq is not string else '0' }} шт.</div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card text-center mt-3" style="padding:60px 20px;">
+    <h2>У вас пока нет сайтов</h2>
+    <p class="text-muted">Добавьте первый сайт и получите нейро-карточку с FAQ</p>
+    <a href="/dashboard/sites/new" class="btn btn-primary mt-2">+ Добавить сайт</a>
+</div>
+{% endif %}
+{% endblock %}
