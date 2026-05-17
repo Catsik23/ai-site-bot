@@ -115,21 +115,62 @@ def add_site():
             flash(result.get('message', 'Ошибка анализа сайта'), 'error')
             return render_template('pages/add_site.html')
 
-        # AI-сервис будет генерировать FAQ и нейро-карточку позже
-        supabase.table('sites').insert({
+        # Сохраняем сайт
+        site_result = supabase.table('sites').insert({
             'user_id': session['user_id'],
             'url': url,
             'domain': result['domain'],
             'title': result['title'],
-            'text_content': result['text'][:5000],
+            'text_content': '',  # текст сохраним в чанках
             'faq': '[]',
             'site_type': detect_site_type(result['text']),
             'contacts': '{"phones": [], "emails": []}',
             'neuro_card_url': '',
             'neuro_card_active': False
         }).execute()
+        
+        site_id = site_result.data[0]['id']
 
+        # === ЗАПУСКАЕМ КОНВЕЙЕР (ПРЯМЫЕ ВЫЗОВЫ) ===
+        import json as json_module
+        
+        # 1. Индексация чанков и сущностей
+        from services.crawler.app import run_indexing
+        try:
+            run_indexing(url, site_id)
+        except Exception as e:
+            print(f"Indexing error: {e}")
+
+        # 2. Генерация FAQ
+        from services.ai.app import generate_faq
+        faq = []
+        try:
+            faq = generate_faq(result['title'], result['text'], result['phones'], result['emails'])
+        except Exception as e:
+            print(f"FAQ error: {e}")
+
+        # 3. Создание нейро-карточки
+        from services.neurocard.app import generate_neuro_card_static
+        card_url = ''
+        try:
+            filename = generate_neuro_card_static(
+                result['domain'], result['title'], result['text'],
+                result['phones'], result['emails'], faq, site_id
+            )
+            card_url = f'/neuro/{filename}'
+        except Exception as e:
+            print(f"Card error: {e}")
+
+        # Обновляем сайт с FAQ и URL карточки
+        supabase.table('sites').update({
+            'faq': json_module.dumps(faq, ensure_ascii=False),
+            'neuro_card_url': card_url,
+            'neuro_card_active': True
+        }).eq('id', site_id).execute()
+
+        log_event('site_added', site_id=site_id, user_id=session['user_id'])
         flash('Сайт добавлен!', 'success')
+        return redirect(url_for('auth.dashboard'))
         return redirect(url_for('auth.dashboard'))
 
     return render_template('pages/add_site.html')
