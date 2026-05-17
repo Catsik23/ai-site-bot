@@ -4,14 +4,14 @@ import re, sys, os, requests
 sys.path.insert(0, '/content/ai-site-bot')
 from shared.supabase import supabase
 from shared.logger import log_event
+from shared.ai_client import ask_yandexgpt
 
 neurocard_bp = Blueprint('neurocard', __name__)
 STATIC_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'neurocards')
 os.makedirs(STATIC_DIR, exist_ok=True)
 bot_index = {}
 
-YANDEX_API_KEY = os.environ.get('YANDEX_API_KEY', '')
-YANDEX_FOLDER_ID = os.environ.get('YANDEX_FOLDER_ID', '')
+
 
 
 def ask_yandexgpt(question, context):
