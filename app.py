@@ -37,9 +37,12 @@ def demo():
     faq = generate_faq(result['title'], result['text'], result['phones'], result['emails'])
     filename = generate_neuro_card_static(result['domain'], result['title'], result['text'], result['phones'], result['emails'], faq, None)
 
+    # Считаем количество найденных страниц
+    pages_found = len(result.get('pages', []))
+
     return jsonify({
         'success': True, 'domain': result['domain'], 'title': result['title'],
-        'pages_count': len(result.get('pages', [])), 'aeo_score': audit['score'], 'aeo_details': audit['details'],
+        'pages_count': pages_found, 'aeo_score': audit['score'], 'aeo_details': audit['details'],
         'faq': faq, 'neuro_card_url': f'/neuro/{filename}',
     })
 
