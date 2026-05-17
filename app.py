@@ -39,7 +39,7 @@ def demo():
 
     return jsonify({
         'success': True, 'domain': result['domain'], 'title': result['title'],
-        'pages_count': 0, 'aeo_score': audit['score'], 'aeo_details': audit['details'],
+        'pages_count': len(result.get('pages', [])), 'aeo_score': audit['score'], 'aeo_details': audit['details'],
         'faq': faq, 'neuro_card_url': f'/neuro/{filename}',
     })
 
