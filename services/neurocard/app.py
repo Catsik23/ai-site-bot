@@ -11,8 +11,6 @@ STATIC_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'neur
 os.makedirs(STATIC_DIR, exist_ok=True)
 bot_index = {}
 
-
-
 def generate_neuro_card_static(domain, title, text, phones, emails, faq, site_id):
     safe_name = re.sub(r'[^a-z0-9\-]', '', domain.replace('.', '-'))[:30]
     filepath = os.path.join(STATIC_DIR, f"{safe_name}.html")
