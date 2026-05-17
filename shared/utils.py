@@ -1,0 +1,68 @@
+import re, requests
+from bs4 import BeautifulSoup
+from urllib.parse import urlparse, urljoin
+
+def parse_site(url):
+    if not url.startswith('http'): url = 'https://' + url
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    try: response = requests.get(url, headers=headers, timeout=15)
+    except: response = requests.get(url.replace('https://','http://'), headers=headers, timeout=15, verify=False)
+    response.encoding = 'utf-8'
+    soup = BeautifulSoup(response.text, 'html.parser')
+    title = soup.title.string.strip() if soup.title else 'Site'
+    domain = urlparse(url).netloc
+    text = soup.get_text(separator=' ', strip=True)
+    phones = re.findall(r'[\+\(]?[1-9][0-9 .\-\(\)]{8,}[0-9]', text)
+    emails = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', text)
+    return {'success': True, 'domain': domain, 'title': title[:100], 'text': text[:12000], 'phones': phones[:2], 'emails': emails[:2]}
+
+def detect_site_type(text):
+    t = text.lower()
+    if any(w in t for w in ['купить','корзина','товар','каталог']): return 'shop'
+    if any(w in t for w in ['услуга','запись','приём','консультация']): return 'service'
+    if any(w in t for w in ['api','интеграция','платформа','решение']): return 'b2b'
+    if any(w in t for w in ['меню','ресторан','блюд','кафе']): return 'food'
+    return 'general'
+
+def chunk_text(text, chunk_size=500):
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+    chunks, current = [], ''
+    for s in sentences:
+        if len(current) + len(s) < chunk_size: current += ' ' + s
+        else:
+            if current: chunks.append(current.strip())
+            current = s
+    if current: chunks.append(current.strip())
+    return chunks[:30]
+
+def aeo_audit(text):
+    score, details = 0, []
+    if re.search(r'(?:вопрос|ответ|faq|част)', text, re.IGNORECASE): score += 25; details.append('FAQ found')
+    else: details.append('No FAQ')
+    if re.search(r'application/ld\+json', text): score += 25; details.append('Schema.org found')
+    else: details.append('No Schema.org')
+    if re.findall(r'[\+\(]?[1-9][0-9 .\-\(\)]{8,}[0-9]', text): score += 15; details.append('Contacts found')
+    else: details.append('No contacts')
+    if len(text) > 3000: score += 20; details.append('Enough content')
+    else: details.append('Not enough content')
+    return {'score': min(score, 100), 'details': details}
+
+def extract_entities(text, domain):
+    entities = []
+    for phone in re.findall(r'[\+\(]?[1-9][0-9 .\-\(\)]{8,}[0-9]', text)[:3]:
+        entities.append({'type':'phone','value':phone,'confidence':0.95})
+    for email in re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', text)[:2]:
+        entities.append({'type':'email','value':email,'confidence':0.95})
+    for price in re.findall(r'\d[\d\s]*\s*(?:₽|руб|р\.)', text)[:5]:
+        entities.append({'type':'price','value':price,'confidence':0.8})
+    return entities
+
+def classify_chunk_topic(chunk):
+    t = chunk.lower()
+    if any(w in t for w in ['доставка','самовывоз','почта']): return 'delivery'
+    if any(w in t for w in ['цена','стоимость','руб','оплата']): return 'pricing'
+    if any(w in t for w in ['контакт','телефон','адрес']): return 'contacts'
+    if any(w in t for w in ['гарант','возврат','качеств']): return 'trust'
+    if any(w in t for w in ['услуга','товар','продукт']): return 'products'
+    if any(w in t for w in ['компания','мы','команд']): return 'about'
+    return 'general'
