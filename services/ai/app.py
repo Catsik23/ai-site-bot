@@ -44,7 +44,7 @@ def generate_faq(title, text, phones, emails):
             full_text = data["result"]["alternatives"][0]["message"]["text"]
             return _parse_faq(full_text, title, phones, emails)
     except Exception as e:
-        print(f"FAQ error: {e}")
+        log_event("FAQ_FAILED", data={"error": str(e)})
 
     return _fallback_faq(title, phones, emails)
 

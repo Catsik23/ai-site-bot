@@ -27,7 +27,7 @@ def ask_yandexgpt(question, context):
         if "result" in data:
             return data["result"]["alternatives"][0]["message"]["text"]
     except Exception as e:
-        print(f"YandexGPT error: {e}")
+        log_event("YANDEX_ERROR", data={"error": str(e)})
     return _simple_search(question, context)
 
 def _simple_search(question, context):
