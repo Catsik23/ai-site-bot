@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 import sys, json
-from shared.utils import parse_site, detect_site_type, aeo_audit, chunk_text, extract_entities, classify_chunk_topic
+from shared.utils import parse_site, detect_site_type, ai_visibility_audit, chunk_text, extract_entities, classify_chunk_topic
 from shared.supabase import supabase
 from shared.logger import log_event
 
@@ -30,7 +30,7 @@ def api_parse():
     data = request.get_json()
     result = parse_site(data.get('url','').strip())
     if not result['success']: return jsonify(result)
-    return jsonify({'success':True,'domain':result['domain'],'title':result['title'],'text':result['text'][:5000],'chunks':chunk_text(result['text']),'aeo_score':aeo_audit(result['text'])['score']})
+    return jsonify({'success':True,'domain':result['domain'],'title':result['title'],'text':result['text'][:5000],'chunks':chunk_text(result['text']),'ai_visibility_score':ai_visibility_audit(result['text'])['score']})
 
 def run_indexing(url, site_id):
     """Прямой вызов индексации без HTTP"""
