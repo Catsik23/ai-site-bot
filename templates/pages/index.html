@@ -132,6 +132,20 @@
     #demoChat::-webkit-scrollbar-track { background: transparent; }
     #demoChat::-webkit-scrollbar-thumb { background: var(--neon); border-radius: 2px; }
 
+    
+    /* Слайдер */
+    .slider-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: var(--border);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    .slider-dot.active {
+        background: var(--neon);
+        box-shadow: 0 0 8px rgba(192,132,252,0.5);
+    }
+
     @media (max-width: 768px) {
         .tariff-grid { grid-template-columns: 1fr; max-width: 320px; }
         .hero { padding: 30px 8px 20px; }
@@ -211,7 +225,7 @@
                 <!-- Поле ввода -->
                 <div style="display:flex; gap:0; padding:8px; background:rgba(10,8,30,0.9);">
                     <input type="text" class="chat-input-cyber" id="chatInput" placeholder="Спросите бота..." onkeypress="if(event.key==='Enter')sendChat()" style="flex:1; padding:12px 16px; background:rgba(0,0,0,0.4); border:1px solid var(--border); border-right:none; border-radius:var(--radius-sm) 0 0 var(--radius-sm); color:var(--text-bright); font-family:var(--font-mono); font-size:0.85rem; outline:none; transition:var(--transition);">
-                    <button onclick="sendChat()" id="chatSendBtn" class="chat-send-btn" style="padding:12px 18px; background:var(--gradient-btn); border:none; border-radius:0 var(--radius-sm) var(--radius-sm) 0; color:white; cursor:pointer; font-size:1.2rem; transition:all 0.2s ease; box-shadow:0 0 15px rgba(124,58,237,0.3);">➤</button>
+                    <button onclick="sendChat()" id="chatSendBtn" class="chat-send-btn" style="padding:12px 18px; background:var(--gradient-btn); border:none; border-radius:0 var(--radius-sm) var(--radius-sm) 0; color:white; cursor:pointer; font-size:1.2rem; transition:all 0.2s ease; box-shadow:0 0 15px rgba(124,58,237,0.3);">→</button>
                 </div>
             </div>
             <p class="text-muted text-sm mt-1" id="chatCounter">Осталось: 5 вопросов</p>
@@ -225,6 +239,55 @@
         </div>
     </div>
 </div>
+
+
+        <!-- Как это работает -->
+        <div class="how-it-works mt-3" style="max-width:600px; margin: 40px auto 0;">
+            <h3 class="text-center mb-2" style="font-family:var(--font-mono); font-size:1rem; text-transform:uppercase; letter-spacing:1px;">Как это работает</h3>
+            <div class="slider-container" style="position:relative; overflow:hidden; border-radius:var(--radius); border:1px solid var(--border); background:var(--surface); backdrop-filter:blur(16px);">
+                <div id="sliderTrack" style="display:flex; transition:transform 0.5s ease;">
+                    <!-- Слайд 1: Парсинг -->
+                    <div class="slide" style="min-width:100%; padding:28px 24px; text-align:center;">
+                        <div style="font-size:2.5rem; margin-bottom:12px;">🔍</div>
+                        <div style="font-family:var(--font-mono); font-weight:700; font-size:1rem; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; color:var(--text-bright);">Сканирование сайта</div>
+                        <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5;">Мы анализируем ваш сайт и собираем всю ключевую информацию: контакты, услуги, цены, описания</p>
+                    </div>
+                    <!-- Слайд 2: FAQ -->
+                    <div class="slide" style="min-width:100%; padding:28px 24px; text-align:center;">
+                        <div style="font-size:2.5rem; margin-bottom:12px;">🧠</div>
+                        <div style="font-family:var(--font-mono); font-weight:700; font-size:1rem; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; color:var(--text-bright);">Генерация FAQ</div>
+                        <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5;">Нейросеть создаёт 10 вопросов и ответов на основе текста вашего сайта. Только факты, без выдумок</p>
+                    </div>
+                    <!-- Слайд 3: Нейро-карточка -->
+                    <div class="slide" style="min-width:100%; padding:28px 24px; text-align:center;">
+                        <div style="font-size:2.5rem; margin-bottom:12px;">📄</div>
+                        <div style="font-family:var(--font-mono); font-weight:700; font-size:1rem; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; color:var(--text-bright);">Нейро-карточка</div>
+                        <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5;">Создаём внешнюю страницу со структурированными данными, которую понимают нейросети</p>
+                    </div>
+                    <!-- Слайд 4: AEO -->
+                    <div class="slide" style="min-width:100%; padding:28px 24px; text-align:center;">
+                        <div style="font-size:2.5rem; margin-bottom:12px;">🎯</div>
+                        <div style="font-family:var(--font-mono); font-weight:700; font-size:1rem; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; color:var(--text-bright);">AEO-оптимизация</div>
+                        <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5;">Answer Engine Optimization — делаем ваш сайт источником ответов для Алисы и голосовых помощников</p>
+                    </div>
+                    <!-- Слайд 5: GEO -->
+                    <div class="slide" style="min-width:100%; padding:28px 24px; text-align:center;">
+                        <div style="font-size:2.5rem; margin-bottom:12px;">🌐</div>
+                        <div style="font-family:var(--font-mono); font-weight:700; font-size:1rem; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; color:var(--text-bright);">GEO-продвижение</div>
+                        <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5;">Generative Engine Optimization — ваш бренд цитируют Яндекс.Нейро и другие генеративные нейросети</p>
+                    </div>
+                </div>
+                <!-- Точки-индикаторы -->
+                <div style="display:flex; justify-content:center; gap:8px; padding:12px;">
+                    <span class="slider-dot active" onclick="goToSlide(0)"></span>
+                    <span class="slider-dot" onclick="goToSlide(1)"></span>
+                    <span class="slider-dot" onclick="goToSlide(2)"></span>
+                    <span class="slider-dot" onclick="goToSlide(3)"></span>
+                    <span class="slider-dot" onclick="goToSlide(4)"></span>
+                </div>
+            </div>
+        </div>
+
 
 <div class="tariff-grid">
     <div class="card tariff-card featured">
@@ -367,6 +430,25 @@
         var answer = faq.length > 0 ? faq[0].a : 'Вся информация доступна на сайте. Позвоните нам!';
         afterEl.innerHTML = '🗣️ <em>«Алиса, ' + randomQ + '»</em><br><br>🤖 <em>«По данным с сайта «' + title + '»: ' + answer.substring(0, 120) + '...»</em>';
     }
+
+    
+    // Слайдер
+    let currentSlide = 0;
+    const totalSlides = 5;
+    
+    function goToSlide(n) {
+        currentSlide = n;
+        document.getElementById('sliderTrack').style.transform = 'translateX(-' + (n * 100) + '%)';
+        document.querySelectorAll('.slider-dot').forEach(function(dot, i) {
+            dot.classList.toggle('active', i === n);
+        });
+    }
+    
+    // Автопереключение каждые 4 секунды
+    setInterval(function() {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        goToSlide(currentSlide);
+    }, 4000);
 
     function renderFaq(faqSubset) {
         const faqList = document.getElementById('faqList');
