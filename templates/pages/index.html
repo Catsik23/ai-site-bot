@@ -158,9 +158,7 @@
 
         <div id="chatSection" style="display:none; margin-top: 24px;">
             <h3 class="mb-2 text-sm">🤖 Попробуйте бота на вашем сайте</h3>
-            <div class="card mb-2" style="padding:0; overflow:hidden; border-radius: var(--radius); height: 400px;">
-                <iframe id="siteIframe" src="" style="width:100%; height:100%; border:none;" sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
-            </div>
+
             <div class="card mt-2">
                 <div id="demoChat" class="mb-2" style="max-height: 200px; overflow-y: auto;"></div>
                 <div class="flex" style="gap:6px;">
@@ -251,7 +249,6 @@
                 }
                 document.getElementById('faqSection').style.display = allFaq.length > 0 ? 'block' : 'none';
                 generateAliceAnswers(data.domain, data.title, allFaq);
-                // Показываем iframe с сайтом клиента
                 document.getElementById('chatSection').style.display = 'block';
                 document.getElementById('chatNote').style.display = 'block';
                 document.getElementById('openSiteLink').href = 'https://' + data.domain;
