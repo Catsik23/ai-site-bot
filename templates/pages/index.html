@@ -282,7 +282,7 @@
         })
         .then(r => r.json())
         .then(data => {
-            demoChat.innerHTML += '<div style="color:var(--neon);font-size:0.85rem;margin:4px 0;">🤖 ' + (data.answer || '...') + '</div>';
+            console.log('Ответ бота:', data.answer); demoChat.innerHTML += '<div style="color:var(--neon);font-size:0.85rem;margin:4px 0;">🤖 ' + (data.answer || '...') + '</div>';
             demoChat.scrollTop = demoChat.scrollHeight;
         })
         .catch(() => {
