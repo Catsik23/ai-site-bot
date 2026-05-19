@@ -40,7 +40,35 @@
         <div class="card mb-2">
             <h2>🔑 Ключи Яндекса</h2>
             <p class="text-muted text-sm mb-2">Для работы бота нужен ваш API-ключ Yandex Cloud</p>
-            <button class="btn btn-ghost text-sm w-full" onclick="alert('Создайте сервисный аккаунт с ролью ai.languageModels.user и создайте API-ключ.')">📖 Как получить ключ</button>
+            <button class="btn btn-ghost text-sm w-full" onclick="document.getElementById('keyModal').style.display='flex'">📖 Как получить ключ</button>
+<div id="keyModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; align-items:center; justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+    <div class="card" style="max-width:550px; max-height:80vh; overflow-y:auto; position:relative;">
+        <button onclick="document.getElementById('keyModal').style.display='none'" style="position:absolute; top:10px; right:14px; background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">&times;</button>
+        <h2 class="mb-2">📖 Как получить API-ключ Яндекса</h2>
+        <p class="text-muted text-sm mb-2">Всего 2 шага по 2 минуты</p>
+        
+        <div class="mb-2"><strong>Шаг 1: Сервисный аккаунт</strong></div>
+        <ol class="text-muted text-sm mb-3" style="padding-left:18px;">
+            <li>Откройте <a href="https://console.cloud.yandex.ru" target="_blank" style="color:var(--neon);">console.cloud.yandex.ru</a></li>
+            <li>Слева выберите <strong>Сервисные аккаунты</strong></li>
+            <li>Нажмите <strong>Создать сервисный аккаунт</strong></li>
+            <li>Имя: любое (например, neuro-bot)</li>
+            <li>Нажмите <strong>Роли в каталоге</strong> → выберите <code>ai.languageModels.user</code></li>
+            <li>Нажмите <strong>Создать</strong></li>
+        </ol>
+
+        <div class="mb-2"><strong>Шаг 2: API-ключ</strong></div>
+        <ol class="text-muted text-sm mb-3" style="padding-left:18px;">
+            <li>Нажмите на созданный сервисный аккаунт</li>
+            <li>Перейдите на вкладку <strong>API-ключи</strong></li>
+            <li>Нажмите <strong>Создать API-ключ</strong> → <strong>Создать</strong></li>
+            <li>Скопируйте значение (начинается с <code>AQVN...</code>)</li>
+            <li>Вставьте в поле <strong>Yandex API Key</strong> в настройках</li>
+        </ol>
+
+        <p class="text-muted text-sm">📸 Скриншоты скоро будут добавлены для наглядности.</p>
+    </div>
+</div>
         </div>
 
         <div class="card mb-2">
