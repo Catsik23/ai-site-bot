@@ -26,6 +26,10 @@ def ask_yandexgpt(question, context):
         data = response.json()
         if "result" in data:
             return data["result"]["alternatives"][0]["message"]["text"]
+    except requests.Timeout:
+        log_event("YANDEX_TIMEOUT", data={"error": "YandexGPT timeout"})
+    except requests.ConnectionError:
+        log_event("YANDEX_CONNECTION_ERROR", data={"error": "YandexGPT connection failed"})
     except Exception as e:
         log_event("YANDEX_ERROR", data={"error": str(e)})
     return _simple_search(question, context)

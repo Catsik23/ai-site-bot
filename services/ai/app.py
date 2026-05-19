@@ -43,6 +43,10 @@ def generate_faq(title, text, phones, emails):
         if "result" in data:
             full_text = data["result"]["alternatives"][0]["message"]["text"]
             return _parse_faq(full_text, title, phones, emails)
+    except requests.Timeout:
+        log_event("FAQ_TIMEOUT", data={"error": "YandexGPT timeout"})
+    except requests.ConnectionError:
+        log_event("FAQ_CONNECTION_ERROR", data={"error": "YandexGPT connection failed"})
     except Exception as e:
         log_event("FAQ_FAILED", data={"error": str(e)})
 
