@@ -1,8 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 import bcrypt
 from datetime import datetime, timedelta
-import sys
-sys.path.insert(0, '/content/ai-site-bot')
 from shared.supabase import supabase
 from shared.utils import parse_site, detect_site_type
 from shared.logger import log_event
@@ -18,7 +16,6 @@ def login_required(f):
             return redirect(url_for('auth.login'))
         return f(*args, **kwargs)
     return decorated
-
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -54,7 +51,6 @@ def register():
 
     return render_template('pages/register.html')
 
-
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -84,20 +80,17 @@ def login():
 
     return render_template('pages/login.html')
 
-
 @auth_bp.route('/logout')
 def logout():
     session.clear()
     flash('Вы вышли из системы', 'success')
     return redirect(url_for('index'))
 
-
 @auth_bp.route('/dashboard')
 @login_required
 def dashboard():
     sites = supabase.table('sites').select('*').eq('user_id', session['user_id']).execute()
     return render_template('pages/dashboard.html', sites=sites.data)
-
 
 @auth_bp.route('/dashboard/sites/new', methods=['GET', 'POST'])
 @login_required
@@ -174,7 +167,6 @@ def add_site():
 
     return render_template('pages/add_site.html')
 
-
 @auth_bp.route('/dashboard/sites/<site_id>')
 @login_required
 def site_card(site_id):
@@ -188,7 +180,6 @@ def site_card(site_id):
     site_data['faq'] = json.loads(site_data['faq']) if isinstance(site_data['faq'], str) else site_data['faq']
     site_data['contacts'] = json.loads(site_data['contacts']) if isinstance(site_data['contacts'], str) else site_data['contacts']
     return render_template('pages/site_card.html', site=site_data)
-
 
 @auth_bp.route('/dashboard/settings', methods=['GET', 'POST'])
 @login_required

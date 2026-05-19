@@ -1,5 +1,3 @@
-import sys
-sys.path.insert(0, '/content/ai-site-bot')
 from shared.supabase import supabase
 from datetime import datetime
 

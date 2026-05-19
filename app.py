@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import sys, os
-sys.path.insert(0, '/content/ai-site-bot')
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from services.auth.app import auth_bp
 from services.ai.app import ai_bp

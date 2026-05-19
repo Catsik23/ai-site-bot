@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, send_from_directory
 import re, sys, os, requests
 
-sys.path.insert(0, '/content/ai-site-bot')
 from shared.supabase import supabase
 from shared.logger import log_event
 from shared.ai_client import ask_yandexgpt

@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 import requests, re, os, sys, json
 
-sys.path.insert(0, '/content/ai-site-bot')
 from shared.supabase import supabase
 from shared.logger import log_event
 
@@ -49,7 +48,6 @@ def generate_faq(title, text, phones, emails):
 
     return _fallback_faq(title, phones, emails)
 
-
 def _parse_faq(raw_text, title, phones, emails):
     qa_list = []
     lines = raw_text.split('\n')
@@ -84,7 +82,6 @@ def _parse_faq(raw_text, title, phones, emails):
 
     return _fallback_faq(title, phones, emails)
 
-
 def _fallback_faq(title, phones, emails):
     faq = [{'q': 'Чем вы занимаетесь?', 'a': f'{title} — мы работаем для вас.'}]
     if phones:
@@ -93,7 +90,6 @@ def _fallback_faq(title, phones, emails):
         faq.append({'q': 'Куда написать?', 'a': f'Email: {emails[0]}'})
     faq.append({'q': 'Где посмотреть цены?', 'a': 'Цены указаны на сайте или уточняйте по телефону.'})
     return faq
-
 
 @ai_bp.route('/api/generate-faq', methods=['POST'])
 def api_generate_faq():
