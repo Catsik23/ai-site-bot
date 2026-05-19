@@ -41,7 +41,7 @@ def bot_page():
 @neurocard_bp.route('/bot/chat', methods=['POST'])
 def bot_chat():
     question = request.json.get('question', '').strip()
-    domain = 'ai-site-bot.onrender.com'
+    domain = os.environ.get('APP_HOST', 'ai-site-bot.onrender.com')
     if domain not in bot_index:
         bot_index[domain] = {
             'chunks': [
