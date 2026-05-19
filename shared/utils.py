@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
 
 def parse_site(url):
+    """Парсит сайт, возвращает словарь с domain, title, text, phones, emails."""
     if not url.startswith('http'): url = 'https://' + url
     headers = {'User-Agent': 'Mozilla/5.0'}
     try: response = requests.get(url, headers=headers, timeout=15)
@@ -17,6 +18,7 @@ def parse_site(url):
     return {'success': True, 'domain': domain, 'title': title[:100], 'text': text[:12000], 'phones': phones[:2], 'emails': emails[:2]}
 
 def detect_site_type(text):
+    """Определяет тип сайта: shop/service/b2b/food/general."""
     t = text.lower()
     if any(w in t for w in ['купить','корзина','товар','каталог']): return 'shop'
     if any(w in t for w in ['услуга','запись','приём','консультация']): return 'service'
@@ -25,6 +27,7 @@ def detect_site_type(text):
     return 'general'
 
 def chunk_text(text, chunk_size=500):
+    """Разбивает текст на чанки по ~500 символов."""
     sentences = re.split(r'(?<=[.!?])\s+', text)
     chunks, current = [], ''
     for s in sentences:
@@ -36,6 +39,7 @@ def chunk_text(text, chunk_size=500):
     return chunks[:30]
 
 def aeo_audit(text):
+    """AEO-аудит: оценка готовности сайта к нейропоиску (0-100)."""
     score, details = 0, []
     if re.search(r'(?:вопрос|ответ|faq|част)', text, re.IGNORECASE): score += 25; details.append('FAQ found')
     else: details.append('No FAQ')
@@ -48,6 +52,7 @@ def aeo_audit(text):
     return {'score': min(score, 100), 'details': details}
 
 def extract_entities(text, domain):
+    """Извлекает факты: телефоны, email, цены, адреса."""
     entities = []
     for phone in re.findall(r'[\+\(]?[1-9][0-9 .\-\(\)]{8,}[0-9]', text)[:3]:
         entities.append({'type':'phone','value':phone,'confidence':0.95})
@@ -58,6 +63,7 @@ def extract_entities(text, domain):
     return entities
 
 def classify_chunk_topic(chunk):
+    """Определяет тему чанка: delivery/pricing/contacts/trust/products/about."""
     t = chunk.lower()
     if any(w in t for w in ['доставка','самовывоз','почта']): return 'delivery'
     if any(w in t for w in ['цена','стоимость','руб','оплата']): return 'pricing'

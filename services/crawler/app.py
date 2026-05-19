@@ -8,6 +8,7 @@ crawler_bp = Blueprint('crawler', __name__)
 
 @crawler_bp.route('/api/index-site', methods=['POST'])
 def api_index_site():
+    """API: индексация сайта — парсинг, чанки, сущности, сохранение в БД."""
     data = request.get_json()
     url = data.get('url','').strip()
     site_id = data.get('site_id','').strip()
@@ -25,6 +26,7 @@ def api_index_site():
 
 @crawler_bp.route('/api/parse', methods=['POST'])
 def api_parse():
+    """API: быстрый парсинг сайта без сохранения."""
     data = request.get_json()
     result = parse_site(data.get('url','').strip())
     if not result['success']: return jsonify(result)

@@ -11,6 +11,7 @@ os.makedirs(STATIC_DIR, exist_ok=True)
 bot_index = {}
 
 def generate_neuro_card_static(domain, title, text, phones, emails, faq, site_id):
+    """Создаёт статическую HTML нейро-карточку и сохраняет на диск."""
     safe_name = re.sub(r'[^a-z0-9\-]', '', domain.replace('.', '-'))[:30]
     filepath = os.path.join(STATIC_DIR, f"{safe_name}.html")
     faq_html = ''.join(f'<div class="faq-item"><h3>{i["q"]}</h3><p>{i["a"]}</p></div>' for i in faq)
@@ -24,10 +25,12 @@ def generate_neuro_card_static(domain, title, text, phones, emails, faq, site_id
 
 @neurocard_bp.route('/neuro/<filename>')
 def serve_neuro_card(filename):
+    """Отдаёт статический HTML нейро-карточки."""
     return send_from_directory(STATIC_DIR, filename)
 
 @neurocard_bp.route('/api/generate-card', methods=['POST'])
 def api_generate_card():
+    """API: создание нейро-карточки и обновление сайта в БД."""
     data = request.get_json()
     fn = generate_neuro_card_static(data['domain'], data['title'], data.get('text', ''), data.get('phones', []), data.get('emails', []), data.get('faq', []), data.get('site_id', ''))
     if data.get('site_id'):
@@ -36,10 +39,12 @@ def api_generate_card():
 
 @neurocard_bp.route('/bot')
 def bot_page():
+    """Страница живого чата с ботом."""
     return render_template('pages/bot.html')
 
 @neurocard_bp.route('/bot/chat', methods=['POST'])
 def bot_chat():
+    """API чата: принимает вопрос, возвращает ответ от YandexGPT."""
     question = request.json.get('question', '').strip()
     domain = os.environ.get('APP_HOST', 'ai-site-bot.onrender.com')
     if domain not in bot_index:

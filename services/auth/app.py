@@ -8,6 +8,7 @@ from shared.logger import log_event
 auth_bp = Blueprint('auth', __name__)
 
 def login_required(f):
+    """Декоратор: требует авторизацию для доступа к маршруту."""
     from functools import wraps
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -19,6 +20,7 @@ def login_required(f):
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
+    """Регистрация нового пользователя."""
     if request.method == 'POST':
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '').strip()
@@ -53,6 +55,7 @@ def register():
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    """Вход в систему."""
     if request.method == 'POST':
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '').strip()
@@ -82,6 +85,7 @@ def login():
 
 @auth_bp.route('/logout')
 def logout():
+    """Выход из системы."""
     session.clear()
     flash('Вы вышли из системы', 'success')
     return redirect(url_for('index'))
@@ -89,12 +93,14 @@ def logout():
 @auth_bp.route('/dashboard')
 @login_required
 def dashboard():
+    """Дашборд — список сайтов пользователя."""
     sites = supabase.table('sites').select('*').eq('user_id', session['user_id']).execute()
     return render_template('pages/dashboard.html', sites=sites.data)
 
 @auth_bp.route('/dashboard/sites/new', methods=['GET', 'POST'])
 @login_required
 def add_site():
+    """Добавление нового сайта: парсинг, индексация, FAQ, нейро-карточка."""
     if request.method == 'POST':
         url = request.form.get('url', '').strip()
         if not url:
@@ -170,6 +176,7 @@ def add_site():
 @auth_bp.route('/dashboard/sites/<site_id>')
 @login_required
 def site_card(site_id):
+    """Карточка сайта: FAQ, код виджета, нейро-карточка."""
     import json
     site = supabase.table('sites').select('*').eq('id', site_id).eq('user_id', session['user_id']).execute()
     if not site.data:
@@ -184,6 +191,7 @@ def site_card(site_id):
 @auth_bp.route('/dashboard/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
+    """Настройки профиля: ключи Яндекса, тариф."""
     if request.method == 'POST':
         api_key = request.form.get('yandex_api_key', '').strip()
         folder_id = request.form.get('yandex_folder_id', '').strip()

@@ -4,6 +4,7 @@ YANDEX_API_KEY = os.environ.get('YANDEX_API_KEY', '')
 YANDEX_FOLDER_ID = os.environ.get('YANDEX_FOLDER_ID', '')
 
 def ask_yandexgpt(question, context):
+    """Отправляет вопрос в YandexGPT и возвращает ответ. При ошибке — fallback на keyword search."""
     if not YANDEX_API_KEY or not YANDEX_FOLDER_ID:
         return _simple_search(question, context)
     try:
@@ -35,6 +36,7 @@ def ask_yandexgpt(question, context):
     return _simple_search(question, context)
 
 def _simple_search(question, context):
+    """Поиск по ключевым словам — заглушка, если YandexGPT недоступен."""
     import re
     keywords = question.lower().split()
     sentences = re.split(r'(?<=[.!?])\s+', context)

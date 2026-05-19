@@ -9,6 +9,7 @@ EVENTS = {
 }
 
 def log_event(event_type, site_id=None, user_id=None, data=None):
+    """Записывает событие в таблицу events в Supabase."""
     try:
         supabase.table('events').insert({
             'site_id': site_id, 'user_id': user_id, 'event_type': event_type,

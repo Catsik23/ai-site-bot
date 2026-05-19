@@ -9,6 +9,7 @@ YANDEX_API_KEY = os.environ.get('YANDEX_API_KEY', '')
 YANDEX_FOLDER_ID = os.environ.get('YANDEX_FOLDER_ID', '')
 
 def generate_faq(title, text, phones, emails):
+    """Генерирует 10 FAQ через YandexGPT на основе текста сайта."""
     if not YANDEX_API_KEY or not YANDEX_FOLDER_ID:
         return _fallback_faq(title, phones, emails)
 
@@ -53,6 +54,7 @@ def generate_faq(title, text, phones, emails):
     return _fallback_faq(title, phones, emails)
 
 def _parse_faq(raw_text, title, phones, emails):
+    """Парсит текст от YandexGPT в список вопросов-ответов."""
     qa_list = []
     lines = raw_text.split('\n')
     current_q = None
@@ -87,6 +89,7 @@ def _parse_faq(raw_text, title, phones, emails):
     return _fallback_faq(title, phones, emails)
 
 def _fallback_faq(title, phones, emails):
+    """Заглушка FAQ, если YandexGPT недоступен."""
     faq = [{'q': 'Чем вы занимаетесь?', 'a': f'{title} — мы работаем для вас.'}]
     if phones:
         faq.append({'q': 'Как с вами связаться?', 'a': f'Позвоните: {phones[0]}'})
@@ -97,6 +100,7 @@ def _fallback_faq(title, phones, emails):
 
 @ai_bp.route('/api/generate-faq', methods=['POST'])
 def api_generate_faq():
+    """API-эндпоинт для генерации FAQ."""
     data = request.get_json()
     faq = generate_faq(data.get('title',''), data.get('text',''), data.get('phones',[]), data.get('emails',[]))
     log_event('faq_generated', site_id=data.get('site_id'))

@@ -17,10 +17,12 @@ app.register_blueprint(neurocard_bp)
 
 @app.route('/')
 def index():
+    """Главная страница — лендинг с AEO-аудитом."""
     return render_template('pages/index.html')
 
 @app.route('/demo', methods=['POST'])
 def demo():
+    """Демо-эндпоинт: парсит сайт, генерирует FAQ и нейро-карточку."""
     from shared.utils import parse_site, aeo_audit
     from services.ai.app import generate_faq
     from services.neurocard.app import generate_neuro_card_static
@@ -48,6 +50,7 @@ def demo():
 
 @app.route('/payment')
 def payment():
+    """Страница оплаты (заглушка)."""
     return render_template('pages/payment.html')
 
 if __name__ == '__main__':
