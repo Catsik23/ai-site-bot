@@ -23,7 +23,7 @@ def index():
 @app.route('/demo', methods=['POST'])
 def demo():
     """Демо-эндпоинт: парсит сайт, генерирует FAQ и нейро-карточку."""
-    from shared.utils import parse_site, aeo_audit
+    from shared.utils import parse_site, ai_visibility_audit
     from services.ai.app import generate_faq
     from services.neurocard.app import generate_neuro_card_static
 
@@ -35,7 +35,7 @@ def demo():
     if not result['success']:
         return jsonify(result)
 
-    audit = aeo_audit(result['text'])
+    audit = ai_visibility_audit(result['text'])
     faq = generate_faq(result['title'], result['text'], result['phones'], result['emails'])
     filename = generate_neuro_card_static(result['domain'], result['title'], result['text'], result['phones'], result['emails'], faq, None)
 
@@ -44,7 +44,7 @@ def demo():
 
     return jsonify({
         'success': True, 'domain': result['domain'], 'title': result['title'],
-        'pages_count': pages_found, 'aeo_score': audit['score'], 'aeo_details': audit['details'],
+        'pages_count': pages_found, 'ai_visibility_score': audit['score'], 'ai_visibility_details': audit['details'],
         'faq': faq, 'neuro_card_url': f'/neuro/{filename}',
     })
 

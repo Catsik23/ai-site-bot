@@ -133,25 +133,6 @@
             <div class="card" style="text-align:center;padding:10px;"><div style="font-size:1.2rem;font-weight:800;color:var(--neon);" id="pagesCount">0</div><div class="text-muted text-sm">страниц</div></div>
             <div class="card" style="text-align:center;padding:10px;"><div style="font-size:1.2rem;font-weight:800;color:var(--neon);" id="faqCount">0</div><div class="text-muted text-sm">FAQ</div></div>
         </div>
-        
-        <div id="aliceSection" style="display:none; margin-top: 20px;">
-            <h3 class="mb-2 text-sm">🔮 Что ответит Алиса</h3>
-            <div class="compare-row">
-                <div class="compare-card before">
-                    <div class="compare-label bad">⬤ Сейчас</div>
-                    <div class="compare-text" id="aliceBefore">
-                        <em>Генерируем...</em>
-                    </div>
-                </div>
-                <div class="compare-card after">
-                    <div class="compare-label good">⬤ С нейро-карточкой</div>
-                    <div class="compare-text" id="aliceAfter">
-                        <em>Генерируем...</em>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div id="faqSection" style="display:none;">
             <h3 class="mb-2 text-sm">Сгенерированные FAQ</h3>
             <div id="faqList"></div>
@@ -222,7 +203,7 @@
             document.getElementById('loadingBlock').style.display = 'none';
             document.getElementById('resultBlock').style.display = 'block';
             if (data.success) {
-                const score = data.aeo_score || 0;
+                const score = data.ai_visibility_score || 0;
                 const circle = document.getElementById('progressCircle');
                 circle.style.strokeDashoffset = 238.8 - (score / 100) * 238.8;
                 let current = 0;
@@ -232,7 +213,7 @@
                     if (current >= score) { current = score; clearInterval(counter); }
                     document.getElementById('scoreNumber').textContent = Math.round(current) + '%';
                 }, 25);
-                document.getElementById('scoreMessage').textContent = score >= 70 ? 'Высокая видимость' : score >= 40 ? 'Требуется оптимизация' : 'Критически низкая';
+                document.getElementById('scoreMessage').textContent = score >= 70 ? '✅ Высокая (70-100%)' : score >= 40 ? '⚠️ Средняя (40-69%)' : '🔴 Критическая (0-39%)';
                 const loss = Math.round((100 - score) * 5);
                 const lossEl = document.getElementById('lossText');
                 if (score < 70) {
@@ -254,7 +235,6 @@
                     showMoreBtn.style.display = 'none';
                 }
                 document.getElementById('faqSection').style.display = allFaq.length > 0 ? 'block' : 'none';
-                generateAliceAnswers(data.domain, data.title, allFaq);
                 // Показываем iframe с сайтом клиента
                 document.getElementById('chatSection').style.display = 'block';
                 document.getElementById('siteIframe').src = 'https://' + data.domain;
@@ -308,24 +288,6 @@
         .catch(() => {
             demoChat.innerHTML += '<div style="color:var(--danger);font-size:0.85rem;margin:4px 0;">🤖 Ошибка. Попробуйте позже.</div>';
         });
-    }
-
-    
-    // === Проверка Алисы ===
-    function generateAliceAnswers(domain, title, faq) {
-        const aliceSection = document.getElementById('aliceSection');
-        aliceSection.style.display = 'block';
-        
-        // Сейчас (без нейро-карточки)
-        const beforeEl = document.getElementById('aliceBefore');
-        const questions = faq.slice(0, 2).map(f => f.q);
-        const randomQ = questions[Math.floor(Math.random() * questions.length)] || 'ваши услуги';
-        beforeEl.innerHTML = '🗣️ <em>«Алиса, ' + randomQ + '»</em><br><br>🤖 <em>«Я не нашла информацию о компании «' + title + '» в своём поиске. Попробуйте уточнить запрос или зайти на сайт.»</em>';
-        
-        // С нейро-карточкой
-        const afterEl = document.getElementById('aliceAfter');
-        const answer = faq.length > 0 ? faq[0].a : 'Вся информация доступна на сайте. Позвоните нам!';
-        afterEl.innerHTML = '🗣️ <em>«Алиса, ' + randomQ + '»</em><br><br>🤖 <em>«По данным с сайта «' + title + '»: ' + answer.substring(0, 120) + '...»</em>';
     }
 
     function renderFaq(faqSubset) {

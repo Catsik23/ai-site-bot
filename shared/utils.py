@@ -38,8 +38,8 @@ def chunk_text(text, chunk_size=500):
     if current: chunks.append(current.strip())
     return chunks[:30]
 
-def aeo_audit(text):
-    """AEO-аудит: оценка готовности сайта к нейропоиску (0-100)."""
+def ai_visibility_audit(text):
+    """AI Visibility Audit: оценка видимости сайта для нейросетей (0-100)."""
     score, details = 0, []
     if re.search(r'(?:вопрос|ответ|faq|част)', text, re.IGNORECASE): score += 25; details.append('FAQ found')
     else: details.append('No FAQ')
