@@ -253,6 +253,8 @@
                 generateAliceAnswers(data.domain, data.title, allFaq);
                 // Показываем iframe с сайтом клиента
                 document.getElementById('chatSection').style.display = 'block';
+                document.getElementById('chatNote').style.display = 'block';
+                document.getElementById('openSiteLink').href = 'https://' + data.domain;
                 document.getElementById('siteIframe').src = 'https://' + data.domain;
                 currentDomain = data.domain;
                 chatQuestionsLeft = 5;
