@@ -89,6 +89,49 @@
     }
     .btn-soft-glow:hover { box-shadow: 0 0 20px rgba(124,58,237,0.35); }
 
+
+    /* Чат в стиле киберпанк */
+    .cyber-chat {
+        border: 1px solid var(--border-active);
+        box-shadow: 0 0 20px rgba(124,58,237,0.1), inset 0 0 20px rgba(0,0,0,0.2);
+    }
+    .chat-input-cyber:focus {
+        border-color: var(--neon);
+        box-shadow: 0 0 10px rgba(192,132,252,0.2);
+    }
+    .chat-send-btn:hover {
+        box-shadow: 0 0 25px rgba(124,58,237,0.5) !important;
+        transform: scale(1.02);
+    }
+    .chat-send-btn:active {
+        transform: scale(0.95);
+    }
+    /* Стили сообщений в чате */
+    .msg-user {
+        align-self: flex-end;
+        background: var(--gradient-btn);
+        color: white;
+        padding: 10px 14px;
+        border-radius: 12px 12px 4px 12px;
+        max-width: 80%;
+        font-size: 0.85rem;
+        box-shadow: 0 2px 8px rgba(124,58,237,0.2);
+    }
+    .msg-bot {
+        align-self: flex-start;
+        background: rgba(192,132,252,0.1);
+        border: 1px solid rgba(192,132,252,0.2);
+        color: var(--text);
+        padding: 10px 14px;
+        border-radius: 12px 12px 12px 4px;
+        max-width: 80%;
+        font-size: 0.85rem;
+    }
+    /* Кастомный скроллбар */
+    #demoChat::-webkit-scrollbar { width: 4px; }
+    #demoChat::-webkit-scrollbar-track { background: transparent; }
+    #demoChat::-webkit-scrollbar-thumb { background: var(--neon); border-radius: 2px; }
+
     @media (max-width: 768px) {
         .tariff-grid { grid-template-columns: 1fr; max-width: 320px; }
         .hero { padding: 30px 8px 20px; }
@@ -157,15 +200,22 @@
         </div>
 
         <div id="chatSection" style="display:none; margin-top: 24px;">
-            <h3 class="mb-2 text-sm">🤖 Попробуйте бота на вашем сайте</h3>
-
-            <div class="card mt-2">
-                <div id="demoChat" class="mb-2" style="max-height: 200px; overflow-y: auto;"></div>
-                <div class="flex" style="gap:6px;">
-                    <input type="text" class="form-input" id="chatInput" placeholder="Спросите бота..." onkeypress="if(event.key==='Enter')sendChat()">
-                    <button class="btn btn-primary" onclick="sendChat()" id="chatSendBtn">→</button>
+            <h3 class="mb-2 text-sm">🤖 Попробуйте бота</h3>
+            <p class="text-muted text-sm mb-2">Бот отвечает на основе данных с сайта</p>
+            <div class="card cyber-chat" style="padding:0; overflow:hidden;">
+                <!-- Окно сообщений -->
+                <div id="demoChat" style="height:280px; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:8px; background:rgba(0,0,0,0.3); scrollbar-width:thin; scrollbar-color:var(--neon) transparent;">
                 </div>
-                <p class="text-muted text-sm mt-1" id="chatCounter">Осталось: 5 вопросов</p>
+                <!-- Полоска-разделитель с неоном -->
+                <div style="height:1px; background:linear-gradient(90deg, transparent, var(--neon), transparent); opacity:0.5;"></div>
+                <!-- Поле ввода -->
+                <div style="display:flex; gap:0; padding:8px; background:rgba(10,8,30,0.9);">
+                    <input type="text" class="chat-input-cyber" id="chatInput" placeholder="Спросите бота..." onkeypress="if(event.key==='Enter')sendChat()" style="flex:1; padding:12px 16px; background:rgba(0,0,0,0.4); border:1px solid var(--border); border-right:none; border-radius:var(--radius-sm) 0 0 var(--radius-sm); color:var(--text-bright); font-family:var(--font-mono); font-size:0.85rem; outline:none; transition:var(--transition);">
+                    <button onclick="sendChat()" id="chatSendBtn" class="chat-send-btn" style="padding:12px 18px; background:var(--gradient-btn); border:none; border-radius:0 var(--radius-sm) var(--radius-sm) 0; color:white; cursor:pointer; font-size:1.2rem; transition:all 0.2s ease; box-shadow:0 0 15px rgba(124,58,237,0.3);">➤</button>
+                </div>
+            </div>
+            <p class="text-muted text-sm mt-1" id="chatCounter">Осталось: 5 вопросов</p>
+        </div>
             </div>
         </div>
 
@@ -278,7 +328,7 @@
         if (!msg || chatQuestionsLeft <= 0) return;
 
         const demoChat = document.getElementById('demoChat');
-        demoChat.innerHTML += '<div style="text-align:right;color:var(--text);font-size:0.85rem;margin:4px 0;">' + msg + '</div>';
+        demoChat.innerHTML += '<div class="msg-user">' + msg + '</div>';
         input.value = '';
         chatQuestionsLeft--;
         document.getElementById('chatCounter').textContent = 'Осталось: ' + chatQuestionsLeft + ' вопросов';
@@ -297,11 +347,11 @@
         })
         .then(r => r.json())
         .then(data => {
-            console.log('Ответ бота:', data.answer); demoChat.innerHTML += '<div style="color:var(--neon);font-size:0.85rem;margin:4px 0;">🤖 ' + (data.answer || '...') + '</div>';
+            console.log('Ответ бота:', data.answer); demoChat.innerHTML += '<div class="msg-bot">🤖 ' + (data.answer || '...') + '</div>';
             demoChat.scrollTop = demoChat.scrollHeight;
         })
         .catch(() => {
-            demoChat.innerHTML += '<div style="color:var(--danger);font-size:0.85rem;margin:4px 0;">🤖 Ошибка. Попробуйте позже.</div>';
+            demoChat.innerHTML += '<div class="msg-bot" style="color:var(--danger);">🤖 Ошибка. Попробуйте позже.</div>';
         });
     }
 
