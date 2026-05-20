@@ -33,7 +33,7 @@
 
     .tariff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 780px; margin: 0 auto 50px; }
     .tariff-card { text-align: center; padding: 24px 14px 20px; display: flex; flex-direction: column; }
-    .tariff-card.featured { border-color: var(--border-active); background: rgba(0,0,0,0.35); box-shadow: 0 0 35px rgba(124,58,237,0.1); }
+    .tariff-card.featured { border-color: var(--border-active); background: rgba(0,0,0,0.35) !important; color: var(--text-bright) !important; box-shadow: 0 0 35px rgba(124,58,237,0.1); }
     .tariff-badge { margin-bottom: 8px; min-height: 20px; }
     .tariff-price { font-family: var(--font-mono); font-size: 1.8rem; font-weight: 900; margin: 6px 0; min-height: 2.2rem; }
     .tariff-name { font-family: var(--font-mono); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; min-height: 1.2rem; }
@@ -167,6 +167,19 @@
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
+
+    .tariff-name-grad {
+        font-family: 'Orbitron', 'JetBrains Mono', monospace;
+        font-size: 1.3rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        background: linear-gradient(90deg, #c084fc, #a78bfa, #6366f1, #22d3ee);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+    }
 </style>
 
 <div class="hero">
@@ -220,6 +233,7 @@
             </div>
         </div>
 
+        <div id="noFaqMessage" style="display:none; text-align:center; padding:20px; color:var(--text-muted);">FAQ не сгенерирован. Попробуйте другой сайт.</div>
         <div id="faqSection" style="display:none;">
             <h3 class="mb-2 text-sm">Сгенерированные FAQ</h3>
             <div id="faqList"></div>
@@ -308,23 +322,23 @@
 <div class="tariff-grid">
     <div class="card tariff-card featured">
         <div class="tariff-badge"><span class="badge badge-trial">Пробный</span></div>
-        <div class="tariff-name" style="font-size:1.2rem; text-shadow: 0 0 10px rgba(192,132,252,0.4);">Пробный</div>
-        <div class="tariff-price" style="font-size:2.5rem;">0 ₽<small style="font-size:0.9rem; color:var(--text-muted);">/мес</small></div>
-        <div class="tariff-features">1 сайт<br>Без скачивания FAQ</div>
+        <div class="tariff-name-grad">Пробный</div>
+        <div class="tariff-price" style="font-size:2.5rem;">0 ₽<small style="font-size:0.9rem; color:var(--text-bright);">/мес</small></div>
+        <div class="tariff-features">Без скачивания FAQ</div>
         <a href="/register" class="btn btn-cyber-pulse w-full cyber-gradient">Выбрать</a>
     </div>
     <div class="card tariff-card">
         <div class="tariff-badge">&nbsp;</div>
-        <div class="tariff-name" style="font-size:1.2rem; text-shadow: 0 0 10px rgba(192,132,252,0.4);">Базовый</div>
-        <div class="tariff-price" style="font-size:2.5rem;">499 ₽<small style="font-size:0.9rem; color:var(--text-muted);">/мес</small></div>
-        <div class="tariff-features">1 сайт<br>FAQ + Нейро-карточка<br>Чат на сайте</div>
+        <div class="tariff-name-grad">Базовый</div>
+        <div class="tariff-price" style="font-size:2.5rem;">499 ₽<small style="font-size:0.9rem; color:var(--text-bright);">/мес</small></div>
+        <div class="tariff-features">FAQ + Нейро-карточка<br>Чат на сайте</div>
         <a href="/register" class="btn btn-neon-premium w-full cyber-gradient">Выбрать</a>
     </div>
     <div class="card tariff-card">
         <div class="tariff-badge">&nbsp;</div>
-        <div class="tariff-name" style="font-size:1.2rem; text-shadow: 0 0 10px rgba(192,132,252,0.4);">Профессиональный</div>
-        <div class="tariff-price" style="font-size:2.5rem;">999 ₽<small style="font-size:0.9rem; color:var(--text-muted);">/мес</small></div>
-        <div class="tariff-features">1 сайт<br>Всё + VK Mini App<br>UGC-размещение</div>
+        <div class="tariff-name-grad">Профессиональный</div>
+        <div class="tariff-price" style="font-size:2.5rem;">999 ₽<small style="font-size:0.9rem; color:var(--text-bright);">/мес</small></div>
+        <div class="tariff-features">Всё + VK Mini App<br>UGC-размещение</div>
         <a href="/register" class="btn btn-primary w-full cyber-gradient">Выбрать</a>
     </div>
 </div>
@@ -376,7 +390,7 @@
                 } else {
                     showMoreBtn.style.display = 'none';
                 }
-                document.getElementById('faqSection').style.display = allFaq.length > 0 ? 'block' : 'none';
+                if (allFaq.length > 0) { document.getElementById('faqSection').style.display = 'block'; document.getElementById('noFaqMessage').style.display = 'none'; } else { document.getElementById('faqSection').style.display = 'none'; document.getElementById('noFaqMessage').style.display = 'block'; }
                 generateAliceAnswers(data.domain, data.title, allFaq);
                 document.getElementById('chatSection').style.display = 'block';
                 document.getElementById('chatNote').style.display = 'block';
@@ -392,7 +406,7 @@
         } catch (error) {
             document.getElementById('loadingBlock').style.display = 'none';
             document.getElementById('resultBlock').style.display = 'block';
-            document.getElementById('scoreMessage').textContent = 'Не удалось подключиться. Попробуйте через 10 секунд.';
+            document.getElementById('scoreMessage').textContent = 'Сервер временно недоступен. Попробуйте позже.';
         }
     });
 
