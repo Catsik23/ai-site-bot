@@ -33,7 +33,7 @@
 
     .tariff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 780px; margin: 0 auto 50px; }
     .tariff-card { text-align: center; padding: 24px 14px 20px; display: flex; flex-direction: column; }
-    .tariff-card.featured { border-color: var(--border-active); box-shadow: 0 0 35px rgba(124,58,237,0.1); }
+    .tariff-card.featured { border-color: var(--border-active); background: rgba(0,0,0,0.35); box-shadow: 0 0 35px rgba(124,58,237,0.1); }
     .tariff-badge { margin-bottom: 8px; min-height: 20px; }
     .tariff-price { font-family: var(--font-mono); font-size: 1.8rem; font-weight: 900; margin: 6px 0; min-height: 2.2rem; }
     .tariff-name { font-family: var(--font-mono); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; min-height: 1.2rem; }
@@ -151,6 +151,22 @@
         .hero { padding: 30px 8px 20px; }
         .audit-card { margin: 0 0 30px; }
     }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .cyber-gradient {
+        background: linear-gradient(90deg, #c084fc, #a78bfa, #6366f1, #22d3ee);
+        background-size: 300% 100%;
+        animation: cyberFlow 3s ease infinite;
+    }
+    @keyframes cyberFlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
 </style>
 
 <div class="hero">
@@ -187,12 +203,11 @@
         <p class="text-center mb-1 text-sm" id="scoreMessage"></p>
         <p class="text-center loss-text" id="lossText" style="display:none;"></p>
         <div class="grid-2 mb-2">
-            <div class="card" style="text-align:center;padding:10px;"><div style="font-size:1.2rem;font-weight:800;color:var(--neon);" id="pagesCount">0</div><div class="text-muted text-sm">страниц</div></div>
-            <div class="card" style="text-align:center;padding:10px;"><div style="font-size:1.2rem;font-weight:800;color:var(--neon);" id="faqCount">0</div><div class="text-muted text-sm">FAQ</div></div>
+            <div class="card" style="text-align:center;padding:10px;"><div style="font-size:1.2rem;font-weight:800;color:var(--neon);" id="faqCount">0</div><div class="text-muted text-sm">FAQ сгенерировано</div></div>
         </div>
         
-        <div id="aliceSection" style="display:none; margin-top: 20px;">
-            <h3 class="mb-2 text-sm">🔮 Что ответит Алиса</h3>
+        <div id="aliceSection" style="display:none; margin-top: 20px; background: rgba(124,58,237,0.05); border: 1px solid var(--border-active); border-radius: var(--radius); padding: 16px;">
+            <h3 class="mb-2 text-sm" style="color: var(--neon); font-family: var(--font-mono);">🔮 Что ответит Алиса</h3>
             <div class="compare-row">
                 <div class="compare-card before">
                     <div class="compare-label bad">⬤ Сейчас</div>
@@ -214,7 +229,7 @@
         </div>
 
         <div id="chatSection" style="display:none; margin-top: 24px;">
-            <h3 class="mb-2 text-sm">🤖 Попробуйте бота</h3>
+            <h3 class="mb-2 text-sm" style="text-align:center;">Попробуй <span style="color:var(--neon);">AI</span>-SITE-BOT на своём сайте</h3>
             <p class="text-muted text-sm mb-2">Бот отвечает на основе данных с сайта</p>
             <div class="card cyber-chat" style="padding:0; overflow:hidden;">
                 <!-- Окно сообщений -->
@@ -293,24 +308,24 @@
 <div class="tariff-grid">
     <div class="card tariff-card featured">
         <div class="tariff-badge"><span class="badge badge-trial">Пробный</span></div>
-        <div class="tariff-price">0 ₽</div>
-        <div class="tariff-name">7 дней</div>
+        <div class="tariff-name" style="font-size:1.2rem; text-shadow: 0 0 10px rgba(192,132,252,0.4);">Пробный</div>
+        <div class="tariff-price" style="font-size:2.5rem;">0 ₽<small style="font-size:0.9rem; color:var(--text-muted);">/мес</small></div>
         <div class="tariff-features">1 сайт<br>Без скачивания FAQ</div>
-        <a href="/register" class="btn btn-cyber-pulse w-full">Выбрать</a>
+        <a href="/register" class="btn btn-cyber-pulse w-full cyber-gradient">Выбрать</a>
     </div>
     <div class="card tariff-card">
         <div class="tariff-badge">&nbsp;</div>
-        <div class="tariff-price">499 ₽</div>
-        <div class="tariff-name">Базовый</div>
-        <div class="tariff-features">5 сайтов<br>FAQ + Нейро-карточка<br>Чат на сайте</div>
-        <a href="/register" class="btn btn-neon-premium w-full">Выбрать</a>
+        <div class="tariff-name" style="font-size:1.2rem; text-shadow: 0 0 10px rgba(192,132,252,0.4);">Базовый</div>
+        <div class="tariff-price" style="font-size:2.5rem;">499 ₽<small style="font-size:0.9rem; color:var(--text-muted);">/мес</small></div>
+        <div class="tariff-features">1 сайт<br>FAQ + Нейро-карточка<br>Чат на сайте</div>
+        <a href="/register" class="btn btn-neon-premium w-full cyber-gradient">Выбрать</a>
     </div>
     <div class="card tariff-card">
         <div class="tariff-badge">&nbsp;</div>
-        <div class="tariff-price">999 ₽</div>
-        <div class="tariff-name">Профессиональный</div>
-        <div class="tariff-features">20 сайтов<br>Всё + VK Mini App<br>UGC-размещение</div>
-        <a href="/register" class="btn btn-primary w-full">Выбрать</a>
+        <div class="tariff-name" style="font-size:1.2rem; text-shadow: 0 0 10px rgba(192,132,252,0.4);">Профессиональный</div>
+        <div class="tariff-price" style="font-size:2.5rem;">999 ₽<small style="font-size:0.9rem; color:var(--text-muted);">/мес</small></div>
+        <div class="tariff-features">1 сайт<br>Всё + VK Mini App<br>UGC-размещение</div>
+        <a href="/register" class="btn btn-primary w-full cyber-gradient">Выбрать</a>
     </div>
 </div>
 
@@ -344,7 +359,7 @@
                 const loss = Math.round((100 - score) * 5);
                 const lossEl = document.getElementById('lossText');
                 if (score < 70) {
-                    lossEl.textContent = 'Вы теряете ~' + loss + ' клиентов в месяц';
+                    lossEl.textContent = 'Ваш сайт не отвечает на ' + (100 - score) + '% вопросов нейросетей';
                     lossEl.style.display = 'block';
                 } else {
                     lossEl.style.display = 'none';
@@ -377,7 +392,7 @@
         } catch (error) {
             document.getElementById('loadingBlock').style.display = 'none';
             document.getElementById('resultBlock').style.display = 'block';
-            document.getElementById('scoreMessage').textContent = 'Сервер просыпается. Повтори.';
+            document.getElementById('scoreMessage').textContent = 'Не удалось подключиться. Попробуйте через 10 секунд.';
         }
     });
 
