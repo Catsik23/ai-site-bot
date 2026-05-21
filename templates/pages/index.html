@@ -346,7 +346,6 @@
 <script>
     let allFaq = [];
     let showingAll = false;
-
     let chatQuestionsLeft = 5;
     let currentDomain = '';
 
@@ -379,6 +378,18 @@
         });
     }
 
+    function generateAliceAnswers(domain, title, faq) {
+        var aliceSection = document.getElementById('aliceSection');
+        aliceSection.style.display = 'block';
+        var beforeEl = document.getElementById('aliceBefore');
+        var questions = faq.slice(0, 2).map(function(f) { return f.q; });
+        var randomQ = questions[Math.floor(Math.random() * questions.length)] || 'ваши услуги';
+        beforeEl.innerHTML = '🗣️ <em>«Алиса, ' + randomQ + '»</em><br><br>🤖 <em>«Я не нашла информацию о компании «' + title + '» в своём поиске. Попробуйте уточнить запрос или зайти на сайт.»</em>';
+        var afterEl = document.getElementById('aliceAfter');
+        var answer = faq.length > 0 ? faq[0].a : 'Вся информация доступна на сайте. Позвоните нам!';
+        afterEl.innerHTML = '🗣️ <em>«Алиса, ' + randomQ + '»</em><br><br>🤖 <em>«По данным с сайта «' + title + '»: ' + answer.substring(0, 120) + '...»</em>';
+    }
+
     document.getElementById('auditForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const url = document.getElementById('urlInput').value;
@@ -402,7 +413,6 @@
                     document.getElementById('scoreNumber').textContent = Math.round(current) + '%';
                 }, 25);
                 document.getElementById('scoreMessage').textContent = score >= 70 ? '✅ Высокая (70-100%)' : score >= 40 ? '⚠️ Средняя (40-69%)' : '🔴 Критическая (0-39%)';
-                const loss = Math.round((100 - score) * 5);
                 const lossEl = document.getElementById('lossText');
                 if (score < 70) {
                     lossEl.textContent = 'Ваш сайт не отвечает на ' + (100 - score) + '% вопросов нейросетей';
@@ -410,7 +420,6 @@
                 } else {
                     lossEl.style.display = 'none';
                 }
-                document.getElementById('pagesCount').textContent = data.pages_count || 0;
                 document.getElementById('faqCount').textContent = (data.faq || []).length;
                 allFaq = data.faq || [];
                 showingAll = false;
@@ -423,17 +432,14 @@
                     showMoreBtn.style.display = 'none';
                 }
                 if (allFaq.length > 0) {
-                document.getElementById('faqSection').style.display = 'block';
-                document.getElementById('noFaqMessage').style.display = 'none';
-            } else {
-                document.getElementById('faqSection').style.display = 'none';
-                document.getElementById('noFaqMessage').style.display = 'block';
-            }ssage').style.display = 'none'; } else { document.getElementById('faqSection').style.display = 'none'; document.getElementById('noFaqMessage').style.display = 'block'; }
-                generateAliceAnswers(data.domain, data.title, allFaq);
+                    document.getElementById('faqSection').style.display = 'block';
+                    document.getElementById('noFaqMessage').style.display = 'none';
+                    generateAliceAnswers(data.domain, data.title, allFaq);
+                } else {
+                    document.getElementById('faqSection').style.display = 'none';
+                    document.getElementById('noFaqMessage').style.display = 'block';
+                }
                 document.getElementById('chatSection').style.display = 'block';
-                document.getElementById('chatNote').style.display = 'block';
-                document.getElementById('openSiteLink').href = 'https://' + data.domain;
-                document.getElementById('siteIframe').src = 'https://' + data.domain;
                 currentDomain = data.domain;
                 chatQuestionsLeft = 5;
                 document.getElementById('chatCounter').textContent = 'Осталось: 5 вопросов';
@@ -448,79 +454,18 @@
         }
     });
 
-
-    // === ЧАТ-БОТ НА 5 ВОПРОСОВ ===
-    let chatQuestionsLeft = 5;
-    let currentDomain = '';
-
-    function sendChat() {
-        const input = document.getElementById('chatInput');
-        const msg = input.value.trim();
-        if (!msg || chatQuestionsLeft <= 0) return;
-
-        const demoChat = document.getElementById('demoChat');
-        demoChat.innerHTML += '<div class="msg-user">' + msg + '</div>';
-        input.value = '';
-        chatQuestionsLeft--;
-        document.getElementById('chatCounter').textContent = 'Осталось: ' + chatQuestionsLeft + ' вопросов';
-
-        if (chatQuestionsLeft <= 0) {
-            document.getElementById('chatInput').disabled = true;
-            document.getElementById('chatSendBtn').disabled = true;
-            document.getElementById('chatCounter').textContent = 'Лимит исчерпан. Зарегистрируйтесь для продолжения.';
-        }
-
-        // Отправляем запрос к нашему API
-        fetch('/bot/chat', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({question: msg, domain: currentDomain})
-        })
-        .then(r => r.json())
-        .then(data => {
-            console.log('Ответ бота:', data.answer); demoChat.innerHTML += '<div class="msg-bot">🤖 ' + (data.answer || '...') + '</div>';
-            demoChat.scrollTop = demoChat.scrollHeight;
-        })
-        .catch(() => {
-            demoChat.innerHTML += '<div class="msg-bot" style="color:var(--danger);">🤖 Ошибка. Попробуйте позже.</div>';
-        });
-    }
-
-    
-    function generateAliceAnswers(domain, title, faq) {
-        var aliceSection = document.getElementById('aliceSection');
-        aliceSection.style.display = 'block';
-        var beforeEl = document.getElementById('aliceBefore');
-        var questions = faq.slice(0, 2).map(function(f) { return f.q; });
-        var randomQ = questions[Math.floor(Math.random() * questions.length)] || 'ваши услуги';
-        beforeEl.innerHTML = '🗣️ <em>«Алиса, ' + randomQ + '»</em><br><br>🤖 <em>«Я не нашла информацию о компании «' + title + '» в своём поиске. Попробуйте уточнить запрос или зайти на сайт.»</em>';
-        var afterEl = document.getElementById('aliceAfter');
-        var answer = faq.length > 0 ? faq[0].a : 'Вся информация доступна на сайте. Позвоните нам!';
-        afterEl.innerHTML = '🗣️ <em>«Алиса, ' + randomQ + '»</em><br><br>🤖 <em>«По данным с сайта «' + title + '»: ' + answer.substring(0, 120) + '...»</em>';
-    }
-
-    
-    // Слайдер
     let currentSlide = 0;
     const totalSlides = 6;
-    
     function goToSlide(n) {
         currentSlide = n;
         document.getElementById('sliderTrack').style.transform = 'translateX(-' + (n * 100) + '%)';
-        document.querySelectorAll('.slider-dot').forEach(function(dot, i) {
-            dot.classList.toggle('active', i === n);
-        });
+        document.querySelectorAll('.slider-dot').forEach(function(dot, i) { dot.classList.toggle('active', i === n); });
     }
-    
-    // Автопереключение каждые 4 секунды
-    setInterval(function() {
-        currentSlide = (currentSlide + 1) % totalSlides;
-        goToSlide(currentSlide);
-    }, 7000);
+    setInterval(function() { currentSlide = (currentSlide + 1) % totalSlides; goToSlide(currentSlide); }, 7000);
 
     function renderFaq(faqSubset) {
         const faqList = document.getElementById('faqList');
-        faqList.innerHTML = faqSubset.map(item => `<div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q"><span>${item.q}</span><span>▾</span></div><div class="faq-a">${item.a}</div></div>`).join('');
+        faqList.innerHTML = faqSubset.map(item => '<div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q"><span>' + item.q + '</span><span>▾</span></div><div class="faq-a">' + item.a + '</div></div>').join('');
     }
 
     function toggleFaq() {
