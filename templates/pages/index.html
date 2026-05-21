@@ -400,6 +400,7 @@
             document.getElementById('loadingBlock').style.display = 'none';
             document.getElementById('resultBlock').style.display = 'block';
             if (data.success) {
+                try {
                 const score = data.ai_visibility_score || 0;
                 const circle = document.getElementById('progressCircle');
                 circle.style.strokeDashoffset = 238.8 - (score / 100) * 238.8;
@@ -444,6 +445,9 @@
                 document.getElementById('chatInput').disabled = false;
                 document.getElementById('chatSendBtn').disabled = false;
                 document.getElementById('demoChat').innerHTML = '';
+                } catch (innerError) {
+                    document.getElementById('scoreMessage').textContent = 'Ошибка отображения: ' + innerError.message;
+                }
             }
         } catch (error) {
             document.getElementById('loadingBlock').style.display = 'none';
