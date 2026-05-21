@@ -347,6 +347,38 @@
     let allFaq = [];
     let showingAll = false;
 
+    let chatQuestionsLeft = 5;
+    let currentDomain = '';
+
+    function sendChat() {
+        const input = document.getElementById('chatInput');
+        const msg = input.value.trim();
+        if (!msg || chatQuestionsLeft <= 0) return;
+        const demoChat = document.getElementById('demoChat');
+        demoChat.innerHTML += '<div class="msg-user">' + msg + '</div>';
+        input.value = '';
+        chatQuestionsLeft--;
+        document.getElementById('chatCounter').textContent = 'Осталось: ' + chatQuestionsLeft + ' вопросов';
+        if (chatQuestionsLeft <= 0) {
+            document.getElementById('chatInput').disabled = true;
+            document.getElementById('chatSendBtn').disabled = true;
+            document.getElementById('chatCounter').textContent = 'Лимит исчерпан. Зарегистрируйтесь для продолжения.';
+        }
+        fetch('/bot/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({question: msg, domain: currentDomain})
+        })
+        .then(r => r.json())
+        .then(data => {
+            demoChat.innerHTML += '<div class="msg-bot">🤖 ' + (data.answer || '...') + '</div>';
+            demoChat.scrollTop = demoChat.scrollHeight;
+        })
+        .catch(() => {
+            demoChat.innerHTML += '<div class="msg-bot" style="color:var(--danger);">🤖 Ошибка. Попробуйте позже.</div>';
+        });
+    }
+
     document.getElementById('auditForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const url = document.getElementById('urlInput').value;
