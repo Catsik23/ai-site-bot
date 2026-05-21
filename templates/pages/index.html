@@ -390,7 +390,13 @@
                 } else {
                     showMoreBtn.style.display = 'none';
                 }
-                if (allFaq.length > 0) { document.getElementById('faqSection').style.display = 'block'; document.getElementById('noFaqMessage').style.display = 'none'; } else { document.getElementById('faqSection').style.display = 'none'; document.getElementById('noFaqMessage').style.display = 'block'; }
+                if (allFaq.length > 0) {
+                document.getElementById('faqSection').style.display = 'block';
+                document.getElementById('noFaqMessage').style.display = 'none';
+            } else {
+                document.getElementById('faqSection').style.display = 'none';
+                document.getElementById('noFaqMessage').style.display = 'block';
+            }ssage').style.display = 'none'; } else { document.getElementById('faqSection').style.display = 'none'; document.getElementById('noFaqMessage').style.display = 'block'; }
                 generateAliceAnswers(data.domain, data.title, allFaq);
                 document.getElementById('chatSection').style.display = 'block';
                 document.getElementById('chatNote').style.display = 'block';
