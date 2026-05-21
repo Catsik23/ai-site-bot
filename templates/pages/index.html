@@ -382,9 +382,9 @@
         const beforeEl = document.getElementById('aliceBefore');
         const questions = faq.slice(0, 2).map(function(f) { return f.q; });
         const randomQ = questions[Math.floor(Math.random() * questions.length)] || 'ваши услуги';
-        beforeEl.innerHTML = '🗣️ <em>«Алиса, ' + randomQ + '»</em><br><br>🤖 <em>«Я не нашла информацию о компании «' + title + '» в своём поиске. Попробуйте уточнить запрос или зайти на сайт.»</em>';
+        beforeEl.innerHTML = '🗣️ <em>«Алиса, ' + randomQ + '»</em><br><br>🤖 <em>«Я не нашла информацию о компании «' + title + '» в своём поиске.»</em>';
         const afterEl = document.getElementById('aliceAfter');
-        const answer = faq.length > 0 ? faq[0].a : 'Вся информация доступна на сайте. Позвоните нам!';
+        const answer = faq.length > 0 ? faq[0].a : 'Вся информация доступна на сайте.';
         afterEl.innerHTML = '🗣️ <em>«Алиса, ' + randomQ + '»</em><br><br>🤖 <em>«По данным с сайта «' + title + '»: ' + answer.substring(0, 120) + '...»</em>';
     }
 
@@ -400,7 +400,6 @@
             document.getElementById('loadingBlock').style.display = 'none';
             document.getElementById('resultBlock').style.display = 'block';
             if (data.success) {
-                try {
                 const score = data.ai_visibility_score || 0;
                 const circle = document.getElementById('progressCircle');
                 circle.style.strokeDashoffset = 238.8 - (score / 100) * 238.8;
@@ -445,9 +444,6 @@
                 document.getElementById('chatInput').disabled = false;
                 document.getElementById('chatSendBtn').disabled = false;
                 document.getElementById('demoChat').innerHTML = '';
-                } catch (innerError) {
-                    document.getElementById('scoreMessage').textContent = 'Ошибка отображения: ' + innerError.message;
-                }
             }
         } catch (error) {
             document.getElementById('loadingBlock').style.display = 'none';
@@ -467,7 +463,11 @@
 
     function renderFaq(faqSubset) {
         const faqList = document.getElementById('faqList');
-        faqList.innerHTML = faqSubset.map(item => '<div class="faq-item" onclick="this.classList.toggle(\'open\')"><div class="faq-q"><span>' + item.q + '</span><span>▾</span></div><div class="faq-a">' + item.a + '</div></div>').join('');
+        let html = '';
+        for (let i = 0; i < faqSubset.length; i++) {
+            html += '<div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q"><span>' + faqSubset[i].q + '</span><span>▾</span></div><div class="faq-a">' + faqSubset[i].a + '</div></div>';
+        }
+        faqList.innerHTML = html;
     }
 
     function toggleFaq() {
