@@ -43,18 +43,23 @@ def bot_page():
 @neurocard_bp.route('/bot/chat', methods=['POST'])
 def bot_chat():
     question = request.json.get('question', '').strip()
-    domain = os.environ.get('APP_HOST', 'ai-site-bot.onrender.com')
-    if domain not in bot_index:
-        bot_index[domain] = {
-            'chunks': [
-                'AI Visibility Optimizer — нейро-карточки для бизнеса. 499 руб/мес.',
-                'Ваш сайт находит Алиса и Яндекс.Нейро. Без правок на сайте.',
-                'Первые 7 дней бесплатно. Подключение за 5 минут.',
-            ],
-            'title': 'AI Visibility Optimizer',
-            'site_type': 'b2b',
-            'all_text': 'AI Visibility Optimizer.'
-        }
+    domain = request.json.get('domain', '').strip()
+    
+    # Если домен не передан или нет в bot_index — используем наш сайт
+    if not domain or domain not in bot_index:
+        domain = os.environ.get('APP_HOST', 'ai-site-bot.onrender.com')
+        if domain not in bot_index:
+            bot_index[domain] = {
+                'chunks': [
+                    'AI Visibility Optimizer — нейро-карточки для бизнеса. 499 руб/мес.',
+                    'Ваш сайт находит Алиса и Яндекс.Нейро. Без правок на сайте.',
+                    'Первые 7 дней бесплатно. Подключение за 5 минут.',
+                ],
+                'title': 'AI Visibility Optimizer',
+                'site_type': 'b2b',
+                'all_text': 'AI Visibility Optimizer.'
+            }
+    
     idx = bot_index[domain]
     context = ' '.join(idx['chunks'][:10])
     answer = ask_yandexgpt(question, context)
