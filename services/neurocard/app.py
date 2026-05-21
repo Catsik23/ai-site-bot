@@ -45,39 +45,48 @@ def bot_chat():
     question = request.json.get('question', '').strip()
     domain = request.json.get('domain', '').strip()
     
-    # Если домен передан, но его нет в bot_index — парсим сайт клиента
-    if domain and domain not in bot_index:
-        try:
-            from shared.utils import parse_site, chunk_text
-            url = 'https://' + domain
-            result = parse_site(url)
-            if result['success']:
-                chunks = chunk_text(result['text'])
+    # Пробуем векторный поиск по site_id (если передан)
+    site_id = request.json.get('site_id', '').strip()
+    context = ''
+    
+    if site_id:
+        from shared.ai_client import get_relevant_chunks
+        context = get_relevant_chunks(site_id, question)
+    
+    # Если нет site_id или векторный поиск не дал результатов — ищем в bot_index
+    if not context:
+        if domain and domain not in bot_index:
+            try:
+                from shared.utils import parse_site, chunk_text
+                url = 'https://' + domain
+                result = parse_site(url)
+                if result['success']:
+                    chunks = chunk_text(result['text'])
+                    bot_index[domain] = {
+                        'chunks': chunks[:10],
+                        'title': result['title'],
+                        'site_type': 'general',
+                        'all_text': result['text'][:5000]
+                    }
+            except:
+                pass
+        
+        if not domain or domain not in bot_index:
+            domain = os.environ.get('APP_HOST', 'ai-site-bot.onrender.com')
+            if domain not in bot_index:
                 bot_index[domain] = {
-                    'chunks': chunks[:10],
-                    'title': result['title'],
-                    'site_type': 'general',
-                    'all_text': result['text'][:5000]
+                    'chunks': [
+                        'AI Visibility Optimizer — нейро-карточки для бизнеса. 499 руб/мес.',
+                        'Ваш сайт находит Алиса и Яндекс.Нейро. Без правок на сайте.',
+                        'Первые 7 дней бесплатно. Подключение за 5 минут.',
+                    ],
+                    'title': 'AI Visibility Optimizer',
+                    'site_type': 'b2b',
+                    'all_text': 'AI Visibility Optimizer.'
                 }
-        except Exception as e:
-            pass
+        
+        idx = bot_index[domain]
+        context = ' '.join(idx['chunks'][:10])
     
-    # Если домен не передан или нет в bot_index — используем наш сайт
-    if not domain or domain not in bot_index:
-        domain = os.environ.get('APP_HOST', 'ai-site-bot.onrender.com')
-        if domain not in bot_index:
-            bot_index[domain] = {
-                'chunks': [
-                    'AI Visibility Optimizer — нейро-карточки для бизнеса. 499 руб/мес.',
-                    'Ваш сайт находит Алиса и Яндекс.Нейро. Без правок на сайте.',
-                    'Первые 7 дней бесплатно. Подключение за 5 минут.',
-                ],
-                'title': 'AI Visibility Optimizer',
-                'site_type': 'b2b',
-                'all_text': 'AI Visibility Optimizer.'
-            }
-    
-    idx = bot_index[domain]
-    context = ' '.join(idx['chunks'][:10])
     answer = ask_yandexgpt(question, context)
     return jsonify({'answer': answer})

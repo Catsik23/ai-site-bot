@@ -1,12 +1,23 @@
-import os, requests
+import os, requests, re, sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from shared.supabase import supabase
+from shared.logger import log_event
 
 YANDEX_API_KEY = os.environ.get('YANDEX_API_KEY', '')
 YANDEX_FOLDER_ID = os.environ.get('YANDEX_FOLDER_ID', '')
 
+_model = None
+def get_model():
+    global _model
+    if _model is None:
+        from sentence_transformers import SentenceTransformer
+        _model = SentenceTransformer('intfloat/multilingual-e5-small')
+    return _model
+
 def ask_yandexgpt(question, context):
-    """Отправляет вопрос в YandexGPT и возвращает ответ. При ошибке — fallback на keyword search."""
     if not YANDEX_API_KEY or not YANDEX_FOLDER_ID:
-        return _simple_search(question, context)
+        return simple_search(question, context)
     try:
         response = requests.post(
             "https://llm.api.cloud.yandex.net/foundationModels/v1/completion",
@@ -18,7 +29,7 @@ def ask_yandexgpt(question, context):
                 "modelUri": f"gpt://{YANDEX_FOLDER_ID}/yandexgpt-lite",
                 "completionOptions": {"maxTokens": 200, "temperature": 0.3},
                 "messages": [
-                    {"role": "system", "text": "Ты — Алиса, персональный ассистент этого сайта. Отвечай только на заданный вопрос. Если спрашивают о товарах, моделях или ассортименте — перечисли их сразу. Если информации нет — предложи связаться с менеджером. Будь дружелюбной и полезной.\nИНФО:\n" + context[:3000]},
+                    {"role": "system", "text": "Ты — Алиса, персональный ассистент этого сайта. Отвечай только на заданный вопрос. Если спрашивают о товарах, моделях или ассортименте — перечисли их сразу. Если информации нет — предложи связаться с менеджером. Будь дружелюбной и полезной.\nИНФО:\n" + context[:4000]},
                     {"role": "user", "text": question}
                 ]
             },
@@ -27,17 +38,11 @@ def ask_yandexgpt(question, context):
         data = response.json()
         if "result" in data:
             return data["result"]["alternatives"][0]["message"]["text"]
-    except requests.Timeout:
-        log_event("YANDEX_TIMEOUT", data={"error": "YandexGPT timeout"})
-    except requests.ConnectionError:
-        log_event("YANDEX_CONNECTION_ERROR", data={"error": "YandexGPT connection failed"})
     except Exception as e:
         log_event("YANDEX_ERROR", data={"error": str(e)})
-    return _simple_search(question, context)
+    return simple_search(question, context)
 
-def _simple_search(question, context):
-    """Поиск по ключевым словам — заглушка, если YandexGPT недоступен."""
-    import re
+def simple_search(question, context):
     keywords = question.lower().split()
     sentences = re.split(r'(?<=[.!?])\s+', context)
     best = []
@@ -49,3 +54,17 @@ def _simple_search(question, context):
     if best:
         return ' '.join([s for _, s in best[:2]])[:300]
     return 'Уточните у менеджера.'
+
+def get_relevant_chunks(site_id, question):
+    try:
+        model = get_model()
+        query_embedding = model.encode(question).tolist()
+        result = supabase.rpc('match_chunks', {
+            'query_embedding': query_embedding,
+            'match_count': 5
+        }).execute()
+        if result.data:
+            return ' '.join([r['chunk_text'] for r in result.data])
+    except Exception as e:
+        log_event("VECTOR_SEARCH_ERROR", data={"error": str(e)})
+    return ''
