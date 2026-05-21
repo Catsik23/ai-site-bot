@@ -465,7 +465,7 @@
         const faqList = document.getElementById('faqList');
         let html = '';
         for (let i = 0; i < faqSubset.length; i++) {
-            html += '<div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q"><span>' + faqSubset[i].q + '</span><span>▾</span></div><div class="faq-a">' + faqSubset[i].a + '</div></div>';
+            html += '<div class="faq-item" onclick="this.classList.toggle(\'open\')"><div class="faq-q"><span>' + faqSubset[i].q + '</span><span>▾</span></div><div class="faq-a">' + faqSubset[i].a + '</div></div>';
         }
         faqList.innerHTML = html;
     }
