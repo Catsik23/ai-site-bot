@@ -33,7 +33,7 @@
 
     .tariff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 780px; margin: 0 auto 50px; }
     .tariff-card { text-align: center; padding: 24px 14px 20px; display: flex; flex-direction: column; }
-    .tariff-card.featured { border-color: var(--border-active); background: rgba(0,0,0,0.35) !important; color: var(--text-bright) !important; box-shadow: 0 0 35px rgba(124,58,237,0.1); }
+    .tariff-card.featured { border-color: var(--border-active); box-shadow: 0 0 35px rgba(124,58,237,0.1); }
     .tariff-badge { margin-bottom: 8px; min-height: 20px; }
     .tariff-price { font-family: var(--font-mono); font-size: 1.8rem; font-weight: 900; margin: 6px 0; min-height: 2.2rem; }
     .tariff-name { font-family: var(--font-mono); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; min-height: 1.2rem; }
@@ -259,8 +259,6 @@
             </div>
             <p class="text-muted text-sm mt-1" id="chatCounter">Осталось: 5 вопросов</p>
         </div>
-            </div>
-        </div>
 
         <div class="text-center mt-2">
             <a href="/register" class="btn btn-soft-glow">Подключить (499 ₽/мес)</a>
@@ -379,14 +377,14 @@
     }
 
     function generateAliceAnswers(domain, title, faq) {
-        var aliceSection = document.getElementById('aliceSection');
+        const aliceSection = document.getElementById('aliceSection');
         aliceSection.style.display = 'block';
-        var beforeEl = document.getElementById('aliceBefore');
-        var questions = faq.slice(0, 2).map(function(f) { return f.q; });
-        var randomQ = questions[Math.floor(Math.random() * questions.length)] || 'ваши услуги';
+        const beforeEl = document.getElementById('aliceBefore');
+        const questions = faq.slice(0, 2).map(function(f) { return f.q; });
+        const randomQ = questions[Math.floor(Math.random() * questions.length)] || 'ваши услуги';
         beforeEl.innerHTML = '🗣️ <em>«Алиса, ' + randomQ + '»</em><br><br>🤖 <em>«Я не нашла информацию о компании «' + title + '» в своём поиске. Попробуйте уточнить запрос или зайти на сайт.»</em>';
-        var afterEl = document.getElementById('aliceAfter');
-        var answer = faq.length > 0 ? faq[0].a : 'Вся информация доступна на сайте. Позвоните нам!';
+        const afterEl = document.getElementById('aliceAfter');
+        const answer = faq.length > 0 ? faq[0].a : 'Вся информация доступна на сайте. Позвоните нам!';
         afterEl.innerHTML = '🗣️ <em>«Алиса, ' + randomQ + '»</em><br><br>🤖 <em>«По данным с сайта «' + title + '»: ' + answer.substring(0, 120) + '...»</em>';
     }
 
