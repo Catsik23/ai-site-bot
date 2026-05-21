@@ -39,13 +39,34 @@ def demo():
     faq = generate_faq(result['title'], result['text'], result['phones'], result['emails'])
     filename = generate_neuro_card_static(result['domain'], result['title'], result['text'], result['phones'], result['emails'], faq, None)
 
+    # Сохраняем чанки в Supabase для векторного поиска
+    demo_site_id = 'demo-' + result['domain']
+    try:
+        from shared.utils import chunk_text, classify_chunk_topic
+        from shared.supabase import supabase
+        
+        # Удаляем старые чанки для этого домена
+        supabase.table('knowledge_chunks').delete().eq('site_id', demo_site_id).execute()
+        
+        chunks = chunk_text(result['text'])
+        for chunk in chunks:
+            supabase.table('knowledge_chunks').insert({
+                'site_id': demo_site_id,
+                'chunk_text': chunk,
+                'topic': classify_chunk_topic(chunk),
+                'importance_score': 3 if classify_chunk_topic(chunk) in ('pricing', 'delivery', 'contacts') else 1,
+                'char_count': len(chunk)
+            }).execute()
+    except Exception as e:
+        pass
+
     # Считаем количество найденных страниц
     pages_found = len(result.get('pages', []))
 
     return jsonify({
         'success': True, 'domain': result['domain'], 'title': result['title'],
         'pages_count': pages_found, 'ai_visibility_score': audit['score'], 'ai_visibility_details': audit['details'],
-        'faq': faq, 'neuro_card_url': f'/neuro/{filename}',
+        'faq': faq, 'neuro_card_url': f'/neuro/{filename}', 'site_id': demo_site_id,
     })
 
 @app.route('/payment')

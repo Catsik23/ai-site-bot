@@ -346,6 +346,7 @@
     let showingAll = false;
     let chatQuestionsLeft = 5;
     let currentDomain = '';
+    let currentSiteId = '';
 
     function sendChat() {
         const input = document.getElementById('chatInput');
@@ -364,7 +365,7 @@
         fetch('/bot/chat', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({question: msg, domain: currentDomain})
+            body: JSON.stringify({question: msg, domain: currentDomain, site_id: currentSiteId})
         })
         .then(r => r.json())
         .then(data => {
@@ -439,6 +440,7 @@
                 }
                 document.getElementById('chatSection').style.display = 'block';
                 currentDomain = data.domain;
+                currentSiteId = data.site_id || '';
                 chatQuestionsLeft = 5;
                 document.getElementById('chatCounter').textContent = 'Осталось: 5 вопросов';
                 document.getElementById('chatInput').disabled = false;
