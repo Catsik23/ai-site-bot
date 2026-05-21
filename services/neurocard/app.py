@@ -45,6 +45,23 @@ def bot_chat():
     question = request.json.get('question', '').strip()
     domain = request.json.get('domain', '').strip()
     
+    # Если домен передан, но его нет в bot_index — парсим сайт клиента
+    if domain and domain not in bot_index:
+        try:
+            from shared.utils import parse_site, chunk_text
+            url = 'https://' + domain
+            result = parse_site(url)
+            if result['success']:
+                chunks = chunk_text(result['text'])
+                bot_index[domain] = {
+                    'chunks': chunks[:10],
+                    'title': result['title'],
+                    'site_type': 'general',
+                    'all_text': result['text'][:5000]
+                }
+        except Exception as e:
+            pass
+    
     # Если домен не передан или нет в bot_index — используем наш сайт
     if not domain or domain not in bot_index:
         domain = os.environ.get('APP_HOST', 'ai-site-bot.onrender.com')
