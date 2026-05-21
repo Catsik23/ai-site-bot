@@ -44,16 +44,32 @@ def bot_page():
 def bot_chat():
     question = request.json.get('question', '').strip()
     domain = request.json.get('domain', '').strip()
-    
-    # Пробуем векторный поиск по site_id (если передан)
     site_id = request.json.get('site_id', '').strip()
-    context = ''
     
+    # Секретная функция: статистика сайта
+    if 'сколько знаков' in question.lower() or 'статистика сайта' in question.lower():
+        if site_id:
+            try:
+                from shared.supabase import supabase
+                chunks = supabase.table('knowledge_chunks').select('*').eq('site_id', site_id).execute()
+                if chunks.data:
+                    total_chars = sum(c['char_count'] for c in chunks.data)
+                    total_chunks = len(chunks.data)
+                    entities = supabase.table('extracted_entities').select('*').eq('site_id', site_id).execute()
+                    total_entities = len(entities.data) if entities.data else 0
+                    updated = chunks.data[0].get('created_at', '?')[:10]
+                    return jsonify({'answer': f'📊 Статистика сайта {domain}:\n• Знаков: {total_chars}\n• Чанков: {total_chunks}\n• Фактов извлечено: {total_entities}\n• Обновлено: {updated}'})
+            except Exception as e:
+                return jsonify({'answer': f'Ошибка: {str(e)[:100]}'})
+        return jsonify({'answer': 'Введите URL на лендинге для индексации.'})
+    
+    # Векторный поиск по site_id
+    context = ''
     if site_id:
         from shared.ai_client import get_relevant_chunks
         context = get_relevant_chunks(site_id, question)
     
-    # Если нет site_id или векторный поиск не дал результатов — ищем в bot_index
+    # Fallback на bot_index
     if not context:
         if domain and domain not in bot_index:
             try:
@@ -75,11 +91,7 @@ def bot_chat():
             domain = os.environ.get('APP_HOST', 'ai-site-bot.onrender.com')
             if domain not in bot_index:
                 bot_index[domain] = {
-                    'chunks': [
-                        'AI Visibility Optimizer — нейро-карточки для бизнеса. 499 руб/мес.',
-                        'Ваш сайт находит Алиса и Яндекс.Нейро. Без правок на сайте.',
-                        'Первые 7 дней бесплатно. Подключение за 5 минут.',
-                    ],
+                    'chunks': ['AI Visibility Optimizer — нейро-карточки для бизнеса. 499 руб/мес.'],
                     'title': 'AI Visibility Optimizer',
                     'site_type': 'b2b',
                     'all_text': 'AI Visibility Optimizer.'
