@@ -467,7 +467,7 @@
 
     function renderFaq(faqSubset) {
         const faqList = document.getElementById('faqList');
-        faqList.innerHTML = faqSubset.map(item => '<div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q"><span>' + item.q + '</span><span>▾</span></div><div class="faq-a">' + item.a + '</div></div>').join('');
+        faqList.innerHTML = faqSubset.map(item => '<div class="faq-item" onclick="this.classList.toggle(\'open\')"><div class="faq-q"><span>' + item.q + '</span><span>▾</span></div><div class="faq-a">' + item.a + '</div></div>').join('');
     }
 
     function toggleFaq() {
