@@ -191,15 +191,30 @@ def add_site():
 @login_required
 def site_card(site_id):
     """Карточка сайта: FAQ, код виджета, нейро-карточка."""
-    import json
+    import json as json_module
     site = supabase.table('sites').select('*').eq('id', site_id).eq('user_id', session['user_id']).execute()
     if not site.data:
         flash('Сайт не найден', 'error')
         return redirect(url_for('auth.dashboard'))
 
     site_data = site.data[0]
-    site_data['faq'] = json.loads(site_data['faq']) if isinstance(site_data['faq'], str) else site_data['faq']
-    site_data['contacts'] = json.loads(site_data['contacts']) if isinstance(site_data['contacts'], str) else site_data['contacts']
+    # Парсим faq один раз
+    faq_raw = site_data.get('faq', '[]')
+    if isinstance(faq_raw, str):
+        try:
+            site_data['faq_list'] = json_module.loads(faq_raw)
+        except:
+            site_data['faq_list'] = []
+    else:
+        site_data['faq_list'] = faq_raw if faq_raw else []
+    site_data['faq_count'] = len(site_data['faq_list'])
+    # Контакты
+    contacts_raw = site_data.get('contacts', '{}')
+    if isinstance(contacts_raw, str):
+        try:
+            site_data['contacts'] = json_module.loads(contacts_raw)
+        except:
+            site_data['contacts'] = {}
     return render_template('pages/site_card.html', site=site_data)
 
 

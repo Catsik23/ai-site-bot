@@ -93,9 +93,9 @@
         <div class="card mb-1">
             <div class="flex-between mb-1">
                 <h2 style="font-size:1rem; margin-bottom:0;">FAQ</h2>
-                <span class="text-muted text-sm">{{ (site.faq or [])|length if site.faq is not string else '0' }} шт.</span>
+                <span class="text-muted text-sm">{{ site.faq_count | default(0) }} шт.</span>
             </div>
-            {% set faq_list = site.faq if site.faq is not string else [] %}
+            {% set faq_list = site.faq_list %}
             {% if faq_list %}
                 <div id="faqContainer">
                 {% for item in faq_list %}
@@ -109,15 +109,23 @@
                 <button class="btn btn-ghost text-sm w-full mt-1" onclick="toggleAllFaq()" id="faqToggleBtn">Показать ещё {{ faq_list|length - 4 }} ↓</button>
                 {% endif %}
                 <script>
-                    document.querySelectorAll('.faq-hidden').forEach(function(el, i) { if (i < 4) el.style.display = 'block'; });
-                    var faqExpanded = false;
-                    function toggleAllFaq() {
-                        faqExpanded = !faqExpanded;
-                        document.querySelectorAll('.faq-hidden').forEach(function(el, i) {
-                            el.style.display = faqExpanded ? 'block' : (i < 4 ? 'block' : 'none');
+                    (function() {
+                        var faqExpanded = false;
+                        window.toggleAllFaq = function() {
+                            faqExpanded = !faqExpanded;
+                            document.querySelectorAll('.faq-hidden').forEach(function(el, i) {
+                                el.style.display = faqExpanded ? 'block' : (i < 4 ? 'block' : 'none');
+                            });
+                            var btn = document.getElementById('faqToggleBtn');
+                            btn.innerHTML = faqExpanded ? 'Скрыть ↑' : 'Показать ещё {{ faq_list|length - 4 }} ↓';
+                        };
+                        // Показываем первые 4 после загрузки DOM
+                        document.addEventListener('DOMContentLoaded', function() {
+                            document.querySelectorAll('.faq-hidden').forEach(function(el, i) {
+                                if (i < 4) el.style.display = 'block';
+                            });
                         });
-                        document.getElementById('faqToggleBtn').innerHTML = faqExpanded ? 'Скрыть ↑' : 'Показать ещё {{ faq_list|length - 4 }} ↓';
-                    }
+                    })();
                 </script>
             {% else %}
                 <p class="text-muted text-sm">Ещё не сгенерирован</p>
@@ -127,7 +135,7 @@
         <div class="card mb-1">
             <h2 style="font-size:1rem; margin-bottom:8px;">Виджет</h2>
             <code style="display:block;background:rgba(0,0,0,0.3);padding:10px;border-radius:6px;font-size:0.7rem;color:var(--neon);">&lt;script src="https://ai-site-bot.onrender.com/widget.js?id={{ site.id }}"&gt;&lt;/script&gt;</code>
-            <button class="btn btn-ghost text-sm mt-1 w-full" onclick="navigator.clipboard.writeText('<script src=\'https://ai-site-bot.onrender.com/widget.js?id={{ site.id }}\'></script>')">Скопировать</button>
+            <button class="btn btn-ghost text-sm mt-1 w-full" data-script="<script src='https://ai-site-bot.onrender.com/widget.js?id={{ site.id | e }}'></script>" onclick="navigator.clipboard.writeText(this.dataset.script)">Скопировать</button>
         </div>
     </div>
 
@@ -140,7 +148,7 @@
             </div>
             <div class="flex-between" style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
                 <span class="text-muted text-sm">FAQ</span>
-                <span class="text-sm">{{ (site.faq or [])|length if site.faq is not string else '0' }} шт.</span>
+                <span class="text-sm">{{ site.faq_count | default(0) }} шт.</span>
             </div>
             <div class="flex-between" style="padding:4px 0;">
                 <span class="text-muted text-sm">Добавлен</span>
@@ -149,7 +157,7 @@
         </div>
 
         <div class="card mb-1" style="border-color: rgba(248,113,113,0.2);">
-            <form method="POST" action="/dashboard/sites/{{ site.id }}/delete" onsubmit="return confirm('Удалить сайт {{ site.domain }}?');">
+            <form method="POST" action="/dashboard/sites/{{ site.id }}/delete" onsubmit="return confirm('Удалить сайт {{ site.domain | e | replace("'", "\\'") }}?');">
                 <button type="submit" class="btn btn-danger w-full" style="padding:8px 16px; font-size:0.75rem;">Удалить сайт</button>
             </form>
         </div>
