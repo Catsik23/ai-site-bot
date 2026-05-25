@@ -64,10 +64,10 @@ def _parse_faq_json(raw_text, title, phones, emails):
         clean = clean.strip()
     try:
         faq = json.loads(clean)
-        if isinstance(faq, list) and len(faq) > 0 and 'q' in faq[0]:
+        if isinstance(faq, list) and len(faq) > 0 and all('q' in i and 'a' in i for i in faq):
             return faq[:10]
-    except (json.JSONDecodeError, ValueError):
-        pass
+    except (json.JSONDecodeError, ValueError) as e:
+        log_event('FAQ_JSON_PARSE_ERROR', error=str(e))
     return _parse_faq_regex(raw_text, title, phones, emails)
 
 
