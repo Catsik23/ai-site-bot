@@ -197,7 +197,7 @@
     <form id="auditForm">
         <div class="flex" style="gap:6px;">
             <input type="text" class="form-input" id="urlInput" placeholder="site.ru" required>
-            <button type="submit" class="btn btn-cyber-pulse">Сканировать</button>
+            <button type="submit" class="btn btn-cyber-pulse" style="background: transparent; border: 1px solid transparent; border-image: linear-gradient(90deg, #c084fc, #a78bfa, #6366f1, #22d3ee) 1; color: transparent; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-image: linear-gradient(90deg, #c084fc, #a78bfa, #6366f1, #22d3ee);">Сканировать</button>
         </div>
     </form>
     <div id="loadingBlock" style="display:none; text-align:center; padding:30px 0;">
@@ -271,19 +271,19 @@
         
         
         <!-- Как это работает -->
-        <div class="how-it-works" style="max-width:600px; margin: 20px auto 0;">
+        <div class="how-it-works" style="max-width:600px; margin: 0 auto;">
             <h3 class="text-center mb-2" style="font-family:var(--font-mono); font-weight:800; font-size:1.5rem; text-transform:uppercase; letter-spacing:-0.3px;">КАК ЭТО РАБОТАЕТ</h3>
             <div class="slider-container" style="position:relative; overflow:hidden; border-radius:var(--radius); border:1px solid var(--border); background:var(--surface); backdrop-filter:blur(16px);">
                 <div id="sliderTrack" style="display:flex; transition:transform 0.5s ease;">
                     <!-- Слайд 1 -->
                     <div class="slide" style="min-width:100%; padding:40px 28px; text-align:center; display:flex; flex-direction:column; justify-content:center; min-height:180px;">
                         <div style="font-family:var(--font-mono); font-weight:800; font-size:1.6rem; text-transform:uppercase; letter-spacing:-0.3px; margin-bottom:12px; color:var(--text-bright);"><span style="color:var(--neon);">Сканирование</span> сайта</div>
-                        <p style="color:#b0b0c0; font-size:0.95rem; line-height:1.7;">Мы анализируем ваш сайт и собираем всю ключевую информацию: контакты, услуги, цены, описания</p>
+                        <p style="color:#b0b0c0; font-size:0.95rem; line-height:1.7;">Мы анализируем ваш сайт и собираем всю ключевую информацию</p>
                     </div>
                     <!-- Слайд 2 -->
                     <div class="slide" style="min-width:100%; padding:40px 28px; text-align:center; display:flex; flex-direction:column; justify-content:center; min-height:180px;">
-                        <div style="font-family:var(--font-mono); font-weight:800; font-size:1.6rem; text-transform:uppercase; letter-spacing:-0.3px; margin-bottom:12px; color:var(--text-bright);">Генерация <span style="color:var(--neon);">FAQ</span></div>
-                        <p style="color:#b0b0c0; font-size:0.95rem; line-height:1.7;">Нейросеть создаёт 10 вопросов и ответов на основе текста вашего сайта. Только факты, без выдумок</p>
+                        <div style="font-family:var(--font-mono); font-weight:800; font-size:1.6rem; text-transform:uppercase; letter-spacing:-0.3px; margin-bottom:12px; color:var(--text-bright);"><span style="color:var(--neon);">Плотный слой</span> захвата</div>
+                        <p style="color:#b0b0c0; font-size:0.95rem; line-height:1.7;">Генерация 10 FAQ для сайта и до 90 FAQ для нейро-карточки на основе реальных запросов вашей ниши</p>
                     </div>
                     <!-- Слайд 3 -->
                     <div class="slide" style="min-width:100%; padding:40px 28px; text-align:center; display:flex; flex-direction:column; justify-content:center; min-height:180px;">
@@ -302,18 +302,31 @@
                     </div>
                     <!-- Слайд 6 -->
                     <div class="slide" style="min-width:100%; padding:40px 28px; text-align:center; display:flex; flex-direction:column; justify-content:center; min-height:180px;">
-                        <div style="font-family:var(--font-mono); font-weight:800; font-size:1.6rem; text-transform:uppercase; letter-spacing:-0.3px; margin-bottom:12px; color:var(--text-bright);"><span style="color:var(--neon);">Алиса</span> начинает отвечать</div>
-                        <p style="color:#b0b0c0; font-size:0.95rem; line-height:1.7;">По запросу Алиса находит нейро-карточку, видит FAQ и контакты, и отвечает. Шансы на цитирование вырастают в разы.</p>
+                        <div style="font-family:var(--font-mono); font-weight:800; font-size:1.6rem; text-transform:uppercase; letter-spacing:-0.3px; margin-bottom:12px; color:var(--text-bright);"><span style="color:var(--neon);">Алиса</span> отвечает</div>
+                        <p style="color:#b0b0c0; font-size:0.95rem; line-height:1.7;">Даже на непрямой запрос Алиса находит нейро-карточку, видит FAQ и отвечает</p>
                     </div>
+                    <!-- Слайд 7 -->
+                    <div class="slide" style="min-width:100%; padding:40px 28px; text-align:center; display:flex; flex-direction:column; justify-content:center; min-height:180px;">
+                        <div style="font-family:var(--font-mono); font-weight:800; font-size:1.6rem; text-transform:uppercase; letter-spacing:-0.3px; margin-bottom:12px; color:var(--text-bright);"><span style="color:var(--neon);">Чат-бот</span> как ассистент</div>
+                        <p style="color:#b0b0c0; font-size:0.95rem; line-height:1.7;">AI-SITE-BOT обучен на вашем сайте и отвечает клиентам 24/7. Как личная Алиса для вашего бизнеса</p>
+                    </div>
+                    <!-- Слайд 8 -->
+                    <div class="slide" style="min-width:100%; padding:40px 28px; text-align:center; display:flex; flex-direction:column; justify-content:center; min-height:180px;">
+                        <div style="font-family:var(--font-mono); font-weight:800; font-size:1.6rem; text-transform:uppercase; letter-spacing:-0.3px; margin-bottom:12px; color:var(--text-bright);"><span style="color:var(--neon);">Внешний</span> контур</div>
+                        <p style="color:#b0b0c0; font-size:0.95rem; line-height:1.7;">Нейро-карточка и чат-бот работают снаружи. На сайте — только одна строка кода для виджета. Все изменения обратимы</p>
+                    </div>
+                    <!-- Слайд 9 -->
+                    <div class="slide" style="min-width:100%; padding:40px 28px; text-align:center; display:flex; flex-direction:column; justify-content:center; min-height:180px;">
+                        <div style="font-family:var(--font-mono); font-weight:800; font-size:1.6rem; text-transform:uppercase; letter-spacing:-0.3px; margin-bottom:12px; color:var(--text-bright);"><span style="color:var(--neon);">UGC</span>-пакет</div>
+                        <p style="color:#b0b0c0; font-size:0.95rem; line-height:1.7;">До 50 генераций в месяц для любых площадок: VK, Telegram, Яндекс.Карты, 2ГИС, Avito, VC.ru. Продвижение вашего продукта</p>
+                    </div>
+                    <!-- Слайд 10 -->
+                    <div class="slide" style="min-width:100%; padding:40px 28px; text-align:center; display:flex; flex-direction:column; justify-content:center; min-height:180px;">
+                        <div style="font-family:var(--font-mono); font-weight:800; font-size:1.6rem; text-transform:uppercase; letter-spacing:-0.3px; margin-bottom:12px; color:var(--text-bright);"><span style="color:var(--neon);">VK</span> Mini App</div>
+                        <p style="color:#b0b0c0; font-size:0.95rem; line-height:1.7;">Мини-приложение, которое подстроится под ваш бизнес. Адвокату — секретарь, продавцу — витрина, салону — администратор</p>
+                    </div></div>
                 </div>
                 <div style="display:flex; justify-content:center; gap:8px; padding:12px;">
-                    <span class="slider-dot active" onclick="goToSlide(0)"></span>
-                    <span class="slider-dot" onclick="goToSlide(1)"></span>
-                    <span class="slider-dot" onclick="goToSlide(2)"></span>
-                    <span class="slider-dot" onclick="goToSlide(3)"></span>
-                    <span class="slider-dot" onclick="goToSlide(4)"></span>
-                    <span class="slider-dot" onclick="goToSlide(5)"></span>
-                    <span class="slider-dot" onclick="goToSlide(6)"></span>
                     <span class="slider-dot" onclick="goToSlide(7)"></span>
                     <span class="slider-dot" onclick="goToSlide(8)"></span>
                     <span class="slider-dot" onclick="goToSlide(9)"></span>
@@ -321,7 +334,7 @@
             </div>
         </div>
 
-<div class="tariff-grid">
+<div class="tariff-grid" style="margin-top: 60px;">
     <div class="card tariff-card featured">
         <div class="tariff-badge"><span class="badge badge-trial">Пробный</span></div>
         <div class="tariff-name-grad">Пробный</div>
@@ -459,7 +472,7 @@
     });
 
     let currentSlide = 0;
-    const totalSlides = 6;
+    const totalSlides = 10;
     function goToSlide(n) {
         currentSlide = n;
         document.getElementById('sliderTrack').style.transform = 'translateX(-' + (n * 100) + '%)';
