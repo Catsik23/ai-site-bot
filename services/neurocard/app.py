@@ -115,7 +115,7 @@ def bot_chat():
 
     # Fallback
     if not context:
-        context = 'AI Visibility Optimizer — нейро-карточки для бизнеса. 499 руб/мес. Первые 7 дней бесплатно. 499₽/мес после пробного.'
+        context = 'AI Visibility Optimizer — нейро-карточки для бизнеса. 499 руб/мес. Первые 7 дней бесплатно. 499₽/мес после пробного. Отменить можно в любой момент.'
 
     system_prompt = PROMPTS.get(site_type, PROMPTS['general']) + '\nИНФО:\n' + context[:3000]
 
