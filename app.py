@@ -6,9 +6,12 @@ from services.auth.app import auth_bp
 from services.ai.app import ai_bp
 from services.crawler.app import crawler_bp
 from services.neurocard.app import neurocard_bp
+from shared.logger import log_event
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24).hex())
+app.secret_key = os.environ.get('SECRET_KEY')
+if not app.secret_key:
+    raise RuntimeError('SECRET_KEY env var is not set')
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(ai_bp)
@@ -58,7 +61,7 @@ def demo():
                 'char_count': len(chunk)
             }).execute()
     except Exception as e:
-        log_event('demo_chunk_error', data={'error': str(e)})
+        log_event('demo_chunk_error', error=str(e), site_id=demo_site_id)
 
     # Считаем количество найденных страниц
     pages_found = len(result.get('pages', []))
