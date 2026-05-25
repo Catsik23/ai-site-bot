@@ -11,84 +11,83 @@
 </div>
 
 <!-- Заголовок -->
-<div class="flex-between mb-3">
+<div class="flex-between mb-2">
     <div>
-        <h1>{{ site.domain or site.url }}</h1>
-        <p class="text-muted">{{ site.site_type or 'general' }}</p>
+        <h1 style="font-size:1.5rem; margin-bottom:0;">{{ site.domain or site.url }}</h1>
+        <p class="text-muted text-sm">{{ site.site_type or 'general' }}</p>
     </div>
-    <div>
-        {% if site.neuro_card_active %}
-            <span class="badge badge-active" style="font-size:0.8rem; padding:6px 14px;">Нейро-карточка активна</span>
-        {% else %}
-            <span class="badge badge-paused" style="font-size:0.8rem; padding:6px 14px;">Приостановлена</span>
-        {% endif %}
-    </div>
+    {% if site.neuro_card_active %}
+        <span class="badge badge-active">Активна</span>
+    {% else %}
+        <span class="badge badge-paused">Приостановлена</span>
+    {% endif %}
 </div>
 
 <div class="grid-2">
-    <!-- Левая колонка: FAQ -->
+    <!-- Левая колонка -->
     <div>
-        <div class="card mb-2">
-            <div class="flex-between mb-2">
-                <h2>📋 FAQ</h2>
+        <!-- FAQ -->
+        <div class="card mb-1">
+            <div class="flex-between mb-1">
+                <h2 style="font-size:1rem; margin-bottom:0;">FAQ</h2>
                 <span class="text-muted text-sm">{{ (site.faq or [])|length if site.faq is not string else '0' }} шт.</span>
             </div>
             {% set faq_list = site.faq if site.faq is not string else [] %}
             {% if faq_list %}
-                {% for item in faq_list %}
+                {% for item in faq_list[:5] %}
                 <div class="faq-item" onclick="this.classList.toggle('open')">
-                    <div class="faq-q">{{ item.q }} <span>▾</span></div>
+                    <div class="faq-q" style="padding:8px 12px; font-size:0.8rem;">{{ item.q }} <span>▾</span></div>
                     <div class="faq-a">{{ item.a }}</div>
                 </div>
                 {% endfor %}
             {% else %}
-                <p class="text-muted text-sm">FAQ ещё не сгенерирован</p>
+                <p class="text-muted text-sm">Ещё не сгенерирован</p>
             {% endif %}
         </div>
 
-        <div class="card mb-2">
-            <h2 class="mb-2">📲 Виджет для сайта</h2>
-            <p class="text-muted text-sm mb-2">Вставьте этот код на свой сайт перед &lt;/body&gt;</p>
-            <code style="display:block;background:rgba(0,0,0,0.3);padding:14px;border-radius:8px;font-size:0.75rem;word-break:break-all;color:var(--neon);">&lt;script src="https://ai-site-bot.onrender.com/widget.js?id={{ site.id }}"&gt;&lt;/script&gt;</code>
-            <button class="btn btn-ghost text-sm mt-2 w-full" onclick="navigator.clipboard.writeText('<script src=\'https://ai-site-bot.onrender.com/widget.js?id={{ site.id }}\'></script>')">📋 Скопировать код</button>
+        <!-- Виджет -->
+        <div class="card mb-1">
+            <h2 style="font-size:1rem; margin-bottom:8px;">Виджет для сайта</h2>
+            <code style="display:block;background:rgba(0,0,0,0.3);padding:10px;border-radius:6px;font-size:0.7rem;color:var(--neon);">&lt;script src="https://ai-site-bot.onrender.com/widget.js?id={{ site.id }}"&gt;&lt;/script&gt;</code>
+            <button class="btn btn-ghost text-sm mt-1 w-full" onclick="navigator.clipboard.writeText('<script src=\'https://ai-site-bot.onrender.com/widget.js?id={{ site.id }}\'></script>')">Скопировать</button>
         </div>
     </div>
 
-    <!-- Правая колонка: действия -->
+    <!-- Правая колонка -->
     <div>
+        <!-- Нейро-карточка -->
         {% if site.neuro_card_url %}
-        <div class="card mb-2">
-            <h2>🌐 Нейро-карточка</h2>
-            <p class="text-muted text-sm mb-2">Ваша публичная страница для нейросетей</p>
-            <a href="{{ site.neuro_card_url }}" target="_blank" class="btn btn-primary w-full">Открыть →</a>
+        <div class="card mb-1">
+            <h2 style="font-size:1rem; margin-bottom:8px;">Нейро-карточка</h2>
+            <a href="{{ site.neuro_card_url }}" target="_blank" class="btn btn-primary w-full" style="padding:8px 16px; font-size:0.75rem;">Открыть →</a>
         </div>
         {% endif %}
 
-        <div class="card mb-2">
-            <h2>📊 Статус</h2>
-            <div class="flex-between mb-1">
-                <span class="text-muted text-sm">Тип сайта</span>
+        <!-- Статус -->
+        <div class="card mb-1">
+            <h2 style="font-size:1rem; margin-bottom:8px;">Статус</h2>
+            <div class="flex-between" style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+                <span class="text-muted text-sm">Тип</span>
                 <span class="text-sm">{{ site.site_type or 'general' }}</span>
             </div>
-            <div class="flex-between mb-1">
-                <span class="text-muted text-sm">FAQ сгенерировано</span>
+            <div class="flex-between" style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+                <span class="text-muted text-sm">FAQ</span>
                 <span class="text-sm">{{ (site.faq or [])|length if site.faq is not string else '0' }} шт.</span>
             </div>
-            <div class="flex-between mb-1">
-                <span class="text-muted text-sm">Нейро-карточка</span>
-                <span class="text-sm">{{ 'Активна' if site.neuro_card_active else 'Приостановлена' }}</span>
+            <div class="flex-between" style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+                <span class="text-muted text-sm">Карточка</span>
+                <span class="text-sm">{{ 'Активна' if site.neuro_card_active else 'Нет' }}</span>
             </div>
-            <div class="flex-between">
+            <div class="flex-between" style="padding:4px 0;">
                 <span class="text-muted text-sm">Добавлен</span>
                 <span class="text-sm">{{ site.created_at[:10] if site.created_at else '?' }}</span>
             </div>
         </div>
 
-        <div class="card mb-2" style="border-color: rgba(248,113,113,0.3);">
-            <h2>🗑️ Удалить сайт</h2>
-            <p class="text-muted text-sm mb-2">Это действие необратимо. Нейро-карточка и все данные будут удалены.</p>
+        <!-- Удаление -->
+        <div class="card mb-1" style="border-color: rgba(248,113,113,0.2);">
             <form method="POST" action="/dashboard/sites/{{ site.id }}/delete" onsubmit="return confirm('Удалить сайт {{ site.domain }}?');">
-                <button type="submit" class="btn btn-danger w-full">Удалить сайт</button>
+                <button type="submit" class="btn btn-danger w-full" style="padding:8px 16px; font-size:0.75rem;">Удалить сайт</button>
             </form>
         </div>
     </div>
