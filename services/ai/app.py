@@ -17,11 +17,11 @@ def generate_faq(title, text, phones, emails):
 
     prompt = (
         f"Сгенерируй 10 вопросов и ответов для FAQ сайта \"{title}\". "
-        "Используй ТОЛЬКО информацию из текста сайта. Пиши строго на русском.\n\n"
-        "Верни ТОЛЬКО валидный JSON-массив без markdown-форматирования:\n"
-        '[{"q": "вопрос", "a": "ответ", "category": "категория"}, ...]\n\n'
-        "Категории: about, pricing, delivery, contacts, guarantees, ordering.\n"
-        "Не добавляй комментарии. Не оборачивай в ```json```.\n\n"
+        "Используй ТОЛЬКО информацию из текста сайта. Пиши строго на русском языке.\n\n"
+        "Формат вывода (каждый вопрос и ответ с новой строки):\n"
+        "Вопрос: <текст вопроса>\n"
+        "Ответ: <текст ответа>\n\n"
+        "Категории: о компании/услугах, цены, доставка, контакты, гарантии, как заказать.\n\n"
         f"Текст сайта:\n<site_content>\n{text[:4000]}\n</site_content>"
     )
 
@@ -48,7 +48,7 @@ def generate_faq(title, text, phones, emails):
         data = resp.json()
         if "result" in data:
             full_text = data["result"]["alternatives"][0]["message"]["text"]
-            return _parse_faq(full_text, title, phones, emails)
+            return _parse_faq_json(full_text, title, phones, emails)
     except requests.Timeout:
         log_event("FAQ_TIMEOUT", data={"error": "YandexGPT timeout"})
     except requests.ConnectionError:
@@ -58,7 +58,27 @@ def generate_faq(title, text, phones, emails):
 
     return _fallback_faq(title, phones, emails)
 
-def _parse_faq(raw_text, title, phones, emails):
+
+def _parse_faq_json(raw_text, title, phones, emails):
+    """Парсит JSON-ответ от YandexGPT, fallback на regex."""
+    clean = raw_text.strip()
+    # Убираем markdown-обёртки ```json ... ```
+    if clean.startswith('```'):
+        clean = re.sub(r'^```(?:json)?\s*', '', clean)
+        clean = re.sub(r'\s*```$', '', clean)
+        clean = clean.strip()
+    
+    try:
+        faq = json.loads(clean)
+        if isinstance(faq, list) and len(faq) > 0 and 'q' in faq[0]:
+            return faq[:10]
+    except (json.JSONDecodeError, ValueError):
+        pass
+    
+    return _parse_faq_regex(raw_text, title, phones, emails)
+
+
+def _parse_faq_regex(raw_text, title, phones, emails):
     qa_list = []
     lines = raw_text.split('\n')
     current_q = None
