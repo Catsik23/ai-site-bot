@@ -35,10 +35,13 @@ def ask_yandexgpt(question, context):
             },
             timeout=10
         )
+        if response.status_code != 200:
+            log_event('YANDEX_API_ERROR', data={'status': response.status_code, 'body': response.text[:200]})
+            return simple_search(question, context)
         data = response.json()
         if "result" in data:
             return data["result"]["alternatives"][0]["message"]["text"]
-    except Exception as e:
+    except (requests.Timeout, requests.ConnectionError, requests.RequestException, ValueError, KeyError) as e:
         log_event("YANDEX_ERROR", data={"error": str(e)})
     return simple_search(question, context)
 
@@ -61,7 +64,8 @@ def get_relevant_chunks(site_id, question):
         query_embedding = model.encode(question).tolist()
         result = supabase.rpc('match_chunks', {
             'query_embedding': query_embedding,
-            'match_count': 5
+            'match_count': 5,
+            'site_id': site_id
         }).execute()
         if result.data:
             return ' '.join([r['chunk_text'] for r in result.data])
