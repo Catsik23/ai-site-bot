@@ -90,13 +90,13 @@ def bot_chat():
             cache_key = f'bot_{domain}'
             cached = _cache.get(cache_key, {})
             if cached and time.time() - cached.get('ts', 0) < 300:
-                site = cached['site']
+                site_data = cached['data']
             else:
                 site = supabase.table('sites').select('id,site_type').eq('domain', domain).execute()
-                _cache[cache_key] = {'site': site, 'ts': time.time()}
-            if site.data:
-                site_id = site.data[0]['id']
-                site_type = site.data[0].get('site_type', 'general')
+                _cache[cache_key] = {'data': site.data, 'ts': time.time()}
+            if site_data:
+                site_id = site_data[0]['id']
+                site_type = site_data[0].get('site_type', 'general')
                 chunk_key = f'chunks_{site_id}'
                 cached_chunks = _cache.get(chunk_key, {})
                 if cached_chunks and time.time() - cached_chunks.get('ts', 0) < 300:
@@ -115,9 +115,9 @@ def bot_chat():
 
     # Fallback
     if not context:
-        context = 'AI Visibility Optimizer — нейро-карточки для бизнеса. 499 руб/мес. Первые 7 дней бесплатно.'
+        context = 'AI Visibility Optimizer — нейро-карточки для бизнеса. 499 руб/мес. Первые 7 дней бесплатно. 499₽/мес после пробного.'
 
     system_prompt = PROMPTS.get(site_type, PROMPTS['general']) + '\nИНФО:\n' + context[:3000]
 
-    answer = ask_yandexgpt(question, context, system_prompt)
+    answer = ask_yandexgpt(question, '', system_prompt)
     return jsonify({'answer': answer})
