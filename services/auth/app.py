@@ -94,8 +94,18 @@ def logout():
 @login_required
 def dashboard():
     """Дашборд — список сайтов пользователя."""
+    import json as json_module
     sites = supabase.table('sites').select('*').eq('user_id', session['user_id']).execute()
-    return render_template('pages/dashboard.html', sites=sites.data)
+    total_faq = 0
+    for site in sites.data:
+        faq = site.get('faq', [])
+        if isinstance(faq, str):
+            try:
+                faq = json_module.loads(faq)
+            except:
+                faq = []
+        total_faq += len(faq)
+    return render_template('pages/dashboard.html', sites=sites.data, total_faq=total_faq)
 
 @auth_bp.route('/dashboard/sites/new', methods=['GET', 'POST'])
 @login_required
