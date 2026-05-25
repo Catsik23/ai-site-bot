@@ -93,6 +93,53 @@ def demo():
         'faq': faq, 'neuro_card_url': f'/neuro/{filename}', 'site_id': demo_site_id, 'remaining': remaining,
     })
 
+@app.route('/admin/errors')
+def admin_errors():
+    """Админ-дашборд ошибок за 24 часа."""
+    from datetime import datetime as dt, timedelta
+    from shared.supabase import supabase
+    
+    since = (dt.utcnow() - timedelta(hours=24)).isoformat()
+    events = supabase.table('events') \
+        .select('*') \
+        .gte('created_at', since) \
+        .order('created_at', desc=True) \
+        .limit(100) \
+        .execute()
+    
+    # Группировка по event_type
+    from collections import Counter
+    error_counts = Counter()
+    recent = []
+    for e in (events.data or []):
+        etype = e.get('event_type', 'unknown')
+        error_counts[etype] += 1
+        if len(recent) < 20:
+            recent.append(e)
+    
+    html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Admin Errors</title>'
+    html += '<style>body{font-family:monospace;background:#0a0a1a;color:#e0e0e0;padding:20px}'
+    html += 'h1{color:#c084fc}table{border-collapse:collapse;width:100%}'
+    html += 'th,td{border:1px solid #333;padding:8px;text-align:left}'
+    html += 'th{background:#1a1a2e}.error{color:#ff4d6a}.warn{color:#ff9100}</style></head><body>'
+    html += '<h1>🔴 Admin Errors (24h)</h1>'
+    
+    html += '<h2>By Type</h2><table><tr><th>Type</th><th>Count</th></tr>'
+    for etype, count in error_counts.most_common():
+        cls = 'error' if 'error' in etype.lower() or 'failed' in etype.lower() else 'warn'
+        html += f'<tr><td class="{cls}">{etype}</td><td>{count}</td></tr>'
+    html += '</table>'
+    
+    html += '<h2>Recent (20)</h2><table><tr><th>Time</th><th>Type</th><th>Data</th></tr>'
+    for e in recent:
+        html += f'<tr><td>{e.get("created_at","")[:19]}</td>'
+        html += f'<td>{e.get("event_type","")}</td>'
+        html += f'<td>{e.get("event_data",{})}</td></tr>'
+    html += '</table></body></html>'
+    
+    return html
+
+
 @app.route('/payment')
 def payment():
     """Страница оплаты (заглушка)."""
