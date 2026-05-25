@@ -95,31 +95,30 @@
                 <h2 style="font-size:1rem; margin-bottom:0;">FAQ</h2>
                 <span class="text-muted text-sm">{{ site.faq_count | default(0) }} шт.</span>
             </div>
-            {% set faq_list = site.faq_list %}
-            {% if faq_list %}
+            
+            {% if site.faq_list %}
                 <div id="faqContainer">
-                {% for item in faq_list %}
-                <div class="faq-item faq-hidden" style="display:none;" onclick="this.classList.toggle('open')">
+                {% for item in site.faq_list %}
+                <div class="faq-item {% if loop.index > 4 %}faq-hidden{% endif %}" {% if loop.index > 4 %}style="display:none;"{% endif %} onclick="this.classList.toggle('open')">
                     <div class="faq-q" style="padding:8px 12px; font-size:0.8rem;">{{ item.q }} <span>▾</span></div>
                     <div class="faq-a">{{ item.a }}</div>
                 </div>
                 {% endfor %}
                 </div>
-                {% if faq_list|length > 4 %}
-                <button class="btn btn-ghost text-sm w-full mt-1" onclick="toggleAllFaq()" id="faqToggleBtn">Показать ещё {{ faq_list|length - 4 }} ↓</button>
+                {% if site.faq_list|length > 4 %}
+                <button class="btn btn-ghost text-sm w-full mt-1" onclick="toggleAllFaq()" id="faqToggleBtn">Показать ещё {{ site.faq_list|length - 4 }} ↓</button>
                 {% endif %}
                 <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        document.querySelectorAll('.faq-hidden').forEach(function(el, i) { if (i < 4) el.style.display = 'block'; });
-                    });
-                    var faqExpanded = false;
-                    function toggleAllFaq() {
-                        faqExpanded = !faqExpanded;
-                        document.querySelectorAll('.faq-hidden').forEach(function(el, i) {
-                            el.style.display = faqExpanded ? 'block' : (i < 4 ? 'block' : 'none');
-                        });
-                        document.getElementById('faqToggleBtn').innerHTML = faqExpanded ? 'Скрыть ↑' : 'Показать ещё {{ faq_list|length - 4 }} ↓';
-                    }
+                    (function() {
+                        var faqExpanded = false;
+                        window.toggleAllFaq = function() {
+                            faqExpanded = !faqExpanded;
+                            document.querySelectorAll('.faq-hidden').forEach(function(el) {
+                                el.style.display = faqExpanded ? 'block' : 'none';
+                            });
+                            document.getElementById('faqToggleBtn').innerHTML = faqExpanded ? 'Скрыть ↑' : 'Показать ещё {{ site.faq_list|length - 4 }} ↓';
+                        };
+                    })();
                 </script>
             {% else %}
                 <p class="text-muted text-sm">Ещё не сгенерирован</p>
