@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify, send_from_directory
-import re, sys, os, requests
+import re, sys, os, requests, html as html_module
 
 from shared.supabase import supabase
 from shared.logger import log_event
@@ -14,8 +14,8 @@ def generate_neuro_card_static(domain, title, text, phones, emails, faq, site_id
     safe_name = re.sub(r'[^a-z0-9\-]', '', domain.replace('.', '-'))[:30]
     filepath = os.path.join(STATIC_DIR, f"{safe_name}.html")
     faq_html = ''.join(f'<div class="faq-item"><h3>{i["q"]}</h3><p>{i["a"]}</p></div>' for i in faq)
-    contact = (f'<p><strong>Телефон:</strong> {phones[0]}</p>' if phones else '') + (f'<p><strong>Email:</strong> {emails[0]}</p>' if emails else '')
-    html = f'<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>{title}</title><style>body{{font-family:Arial;max-width:800px;margin:0 auto;padding:20px;background:#f9fafb;color:#111}}h1{{font-size:2rem}}h2{{font-size:1.5rem;margin-top:30px}}.faq-item{{background:#fff;padding:15px;margin:10px 0;border-radius:10px}}.faq-item h3{{color:#7c3aed}}.contact{{background:#eef2ff;padding:15px;border-radius:10px;margin:20px 0}}</style></head><body><h1>{title}</h1><div class="contact">{contact or '<p>Контакты на сайте</p>'}</div><h2>FAQ</h2>{faq_html}<p style="margin-top:40px;color:#888">AI Visibility Optimizer</p></body></html>'
+    contact = (f'<p><strong>Телефон:</strong> {html_module.escape(phones[0])}</p>' if phones else '') + (f'<p><strong>Email:</strong> {html_module.escape(emails[0])}</p>' if emails else '')
+    html = f'<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>{html_module.escape(title)}</title><style>body{{font-family:Arial;max-width:800px;margin:0 auto;padding:20px;background:#f9fafb;color:#111}}h1{{font-size:2rem}}h2{{font-size:1.5rem;margin-top:30px}}.faq-item{{background:#fff;padding:15px;margin:10px 0;border-radius:10px}}.faq-item h3{{color:#7c3aed}}.contact{{background:#eef2ff;padding:15px;border-radius:10px;margin:20px 0}}</style></head><body><h1>{html_module.escape(title)}</h1><div class="contact">{contact or '<p>Контакты на сайте</p>'}</div><h2>FAQ</h2>{faq_html}<p style="margin-top:40px;color:#888">AI Visibility Optimizer</p></body></html>'
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(html)
     if site_id:
@@ -64,7 +64,7 @@ def bot_chat():
     
     # Если домен не передан или нет в bot_index — используем наш сайт
     if not domain or domain not in bot_index:
-        domain = os.environ.get('APP_HOST', 'ai-site-bot.onrender.com')
+        domain = request.host
         if domain not in bot_index:
             bot_index[domain] = {
                 'chunks': [
