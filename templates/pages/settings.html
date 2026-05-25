@@ -11,21 +11,23 @@
 </div>
 
 <div class="card" style="max-width:500px;margin:40px auto;">
-    <h2>Настройки</h2>
-    <form method="POST">
-        <div class="form-group">
-            <label class="form-label">Yandex API Key</label>
-            <input type="text" name="yandex_api_key" class="form-input" value="{{ user.yandex_api_key_encrypted or '' }}">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Yandex Folder ID</label>
-            <input type="text" name="yandex_folder_id" class="form-input" value="{{ user.yandex_folder_id_encrypted or '' }}">
-        </div>
-        <button type="submit" class="btn btn-primary w-full">Сохранить</button>
-    </form>
-    <div class="mt-3" style="border-top:1px solid var(--border);padding-top:16px;">
-        <p class="text-muted text-sm">Тариф: <strong>{{ user.tariff or 'trial' }}</strong></p>
-        <p class="text-muted text-sm">Подписка: {{ 'Активна' if user.subscription_active else 'Неактивна' }}</p>
+    <h2>Настройки профиля</h2>
+    
+    <div class="mb-3" style="border-bottom:1px solid var(--border);padding-bottom:16px;">
+        <p class="text-muted text-sm">Email</p>
+        <strong>{{ session.get('user_email', '') }}</strong>
     </div>
+    
+    <div class="mb-3" style="border-bottom:1px solid var(--border);padding-bottom:16px;">
+        <p class="text-muted text-sm">Тариф</p>
+        <strong>{{ user.tariff or 'trial' }}</strong>
+    </div>
+    
+    <div class="mb-3" style="border-bottom:1px solid var(--border);padding-bottom:16px;">
+        <p class="text-muted text-sm">Подписка</p>
+        <strong>{{ 'Активна' if user.subscription_active else 'Неактивна' }}</strong>
+    </div>
+    
+    <p class="text-muted text-sm mt-3">Все операции с ИИ выполняются через наш ключ. Вам не нужно подключать свой.</p>
 </div>
 {% endblock %}

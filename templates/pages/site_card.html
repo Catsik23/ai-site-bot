@@ -10,88 +10,87 @@
     </div>
 </div>
 
-<h1>{{ site.domain or site.url }}</h1>
+<!-- Заголовок -->
 <div class="flex-between mb-3">
-    <span class="text-muted">{{ site.site_type or 'general' }}</span>
-    {% if site.neuro_card_active %}
-        <span class="badge badge-active">Нейро-карточка активна</span>
-    {% else %}
-        <span class="badge badge-paused">Приостановлена</span>
-    {% endif %}
+    <div>
+        <h1>{{ site.domain or site.url }}</h1>
+        <p class="text-muted">{{ site.site_type or 'general' }}</p>
+    </div>
+    <div>
+        {% if site.neuro_card_active %}
+            <span class="badge badge-active" style="font-size:0.8rem; padding:6px 14px;">Нейро-карточка активна</span>
+        {% else %}
+            <span class="badge badge-paused" style="font-size:0.8rem; padding:6px 14px;">Приостановлена</span>
+        {% endif %}
+    </div>
 </div>
 
 <div class="grid-2">
-    <div class="card">
-        <h2>📋 FAQ ({{ (site.faq or [])|length if site.faq is not string else '0' }} шт.)</h2>
-        {% set faq_list = site.faq if site.faq is not string else [] %}
-        {% if faq_list %}
-            {% for item in faq_list %}
-            <div class="faq-item" onclick="this.classList.toggle('open')">
-                <div class="faq-q">{{ item.q }} <span>▾</span></div>
-                <div class="faq-a">{{ item.a }}</div>
-            </div>
-            {% endfor %}
-        {% else %}
-            <p class="text-muted">FAQ ещё не сгенерирован</p>
-        {% endif %}
-    </div>
-
+    <!-- Левая колонка: FAQ -->
     <div>
         <div class="card mb-2">
-            <h2>🔑 Ключи Яндекса</h2>
-            <p class="text-muted text-sm mb-2">Для работы бота нужен ваш API-ключ Yandex Cloud</p>
-            <button class="btn btn-ghost text-sm w-full" onclick="document.getElementById('keyModal').style.display='flex'">📖 Как получить ключ</button>
-<div id="keyModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; align-items:center; justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
-    <div class="card" style="max-width:550px; max-height:80vh; overflow-y:auto; position:relative;">
-        <button onclick="document.getElementById('keyModal').style.display='none'" style="position:absolute; top:10px; right:14px; background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">&times;</button>
-        <h2 class="mb-2">📖 Как получить API-ключ Яндекса</h2>
-        <p class="text-muted text-sm mb-2">Всего 2 шага по 2 минуты</p>
-        
-        <div class="mb-2"><strong>Шаг 1: Сервисный аккаунт</strong></div>
-        <ol class="text-muted text-sm mb-3" style="padding-left:18px;">
-            <li>Откройте <a href="https://console.cloud.yandex.ru" target="_blank" style="color:var(--neon);">console.cloud.yandex.ru</a></li>
-            <li>Слева выберите <strong>Сервисные аккаунты</strong></li>
-            <li>Нажмите <strong>Создать сервисный аккаунт</strong></li>
-            <li>Имя: любое (например, neuro-bot)</li>
-            <li>Нажмите <strong>Роли в каталоге</strong> → выберите <code>ai.languageModels.user</code></li>
-            <li>Нажмите <strong>Создать</strong></li>
-        </ol>
-
-        <div class="mb-2"><strong>Шаг 2: API-ключ</strong></div>
-        <ol class="text-muted text-sm mb-3" style="padding-left:18px;">
-            <li>Нажмите на созданный сервисный аккаунт</li>
-            <li>Перейдите на вкладку <strong>API-ключи</strong></li>
-            <li>Нажмите <strong>Создать API-ключ</strong> → <strong>Создать</strong></li>
-            <li>Скопируйте значение (начинается с <code>AQVN...</code>)</li>
-            <li>Вставьте в поле <strong>Yandex API Key</strong> в настройках</li>
-        </ol>
-
-        <p class="text-muted text-sm">📸 Скриншоты скоро будут добавлены для наглядности.</p>
-    </div>
-</div>
+            <div class="flex-between mb-2">
+                <h2>📋 FAQ</h2>
+                <span class="text-muted text-sm">{{ (site.faq or [])|length if site.faq is not string else '0' }} шт.</span>
+            </div>
+            {% set faq_list = site.faq if site.faq is not string else [] %}
+            {% if faq_list %}
+                {% for item in faq_list %}
+                <div class="faq-item" onclick="this.classList.toggle('open')">
+                    <div class="faq-q">{{ item.q }} <span>▾</span></div>
+                    <div class="faq-a">{{ item.a }}</div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted text-sm">FAQ ещё не сгенерирован</p>
+            {% endif %}
         </div>
 
         <div class="card mb-2">
-            <h2>📲 Код виджета</h2>
-            <p class="text-muted text-sm mb-1">Вставьте на свой сайт перед &lt;/body&gt;</p>
-            <code style="display:block;background:rgba(0,0,0,0.3);padding:12px;border-radius:8px;font-size:0.75rem;word-break:break-all;color:var(--neon);">&lt;script src="https://ai-site-bot.onrender.com/widget.js?id={{ site.id }}"&gt;&lt;/script&gt;</code>
+            <h2 class="mb-2">📲 Виджет для сайта</h2>
+            <p class="text-muted text-sm mb-2">Вставьте этот код на свой сайт перед &lt;/body&gt;</p>
+            <code style="display:block;background:rgba(0,0,0,0.3);padding:14px;border-radius:8px;font-size:0.75rem;word-break:break-all;color:var(--neon);">&lt;script src="https://ai-site-bot.onrender.com/widget.js?id={{ site.id }}"&gt;&lt;/script&gt;</code>
+            <button class="btn btn-ghost text-sm mt-2 w-full" onclick="navigator.clipboard.writeText('<script src=\'https://ai-site-bot.onrender.com/widget.js?id={{ site.id }}\'></script>')">📋 Скопировать код</button>
         </div>
+    </div>
 
+    <!-- Правая колонка: действия -->
+    <div>
         {% if site.neuro_card_url %}
         <div class="card mb-2">
             <h2>🌐 Нейро-карточка</h2>
-            <a href="{{ site.neuro_card_url }}" target="_blank" class="btn btn-ghost text-sm w-full">Открыть →</a>
+            <p class="text-muted text-sm mb-2">Ваша публичная страница для нейросетей</p>
+            <a href="{{ site.neuro_card_url }}" target="_blank" class="btn btn-primary w-full">Открыть →</a>
         </div>
         {% endif %}
+
+        <div class="card mb-2">
+            <h2>📊 Статус</h2>
+            <div class="flex-between mb-1">
+                <span class="text-muted text-sm">Тип сайта</span>
+                <span class="text-sm">{{ site.site_type or 'general' }}</span>
+            </div>
+            <div class="flex-between mb-1">
+                <span class="text-muted text-sm">FAQ сгенерировано</span>
+                <span class="text-sm">{{ (site.faq or [])|length if site.faq is not string else '0' }} шт.</span>
+            </div>
+            <div class="flex-between mb-1">
+                <span class="text-muted text-sm">Нейро-карточка</span>
+                <span class="text-sm">{{ 'Активна' if site.neuro_card_active else 'Приостановлена' }}</span>
+            </div>
+            <div class="flex-between">
+                <span class="text-muted text-sm">Добавлен</span>
+                <span class="text-sm">{{ site.created_at[:10] if site.created_at else '?' }}</span>
+            </div>
+        </div>
 
         <div class="card mb-2" style="border-color: rgba(248,113,113,0.3);">
             <h2>🗑️ Удалить сайт</h2>
             <p class="text-muted text-sm mb-2">Это действие необратимо. Нейро-карточка и все данные будут удалены.</p>
-            <form method="POST" action="/dashboard/sites/{{ site.id }}/delete" onsubmit="return confirm('Удалить сайт {{ site.domain }}? Это действие необратимо.');">
+            <form method="POST" action="/dashboard/sites/{{ site.id }}/delete" onsubmit="return confirm('Удалить сайт {{ site.domain }}?');">
                 <button type="submit" class="btn btn-danger w-full">Удалить сайт</button>
             </form>
         </div>
-
     </div>
 </div>
 {% endblock %}
