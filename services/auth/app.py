@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 import bcrypt
+import json as json_module
 from datetime import datetime, timedelta
 from shared.supabase import supabase
 from shared.utils import parse_site, detect_site_type
@@ -94,7 +95,6 @@ def logout():
 @login_required
 def dashboard():
     """Дашборд — список сайтов пользователя."""
-    import json as json_module
     sites = supabase.table('sites').select('*').eq('user_id', session['user_id']).execute()
     total_faq = 0
     for site in sites.data:
@@ -145,7 +145,6 @@ def add_site():
         site_id = site_result.data[0]['id']
 
         # === ЗАПУСКАЕМ КОНВЕЙЕР (ПРЯМЫЕ ВЫЗОВЫ) ===
-        import json as json_module
         
         # 1. Индексация чанков и сущностей
         from services.crawler.app import run_indexing
@@ -191,7 +190,6 @@ def add_site():
 @login_required
 def site_card(site_id):
     """Карточка сайта: FAQ, код виджета, нейро-карточка."""
-    import json as json_module
     site = supabase.table('sites').select('*').eq('id', site_id).eq('user_id', session['user_id']).execute()
     if not site.data:
         flash('Сайт не найден', 'error')
