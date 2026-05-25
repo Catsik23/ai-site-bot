@@ -8,12 +8,13 @@ EVENTS = {
     'USER_LOGIN': 'user_login', 'ERROR': 'error',
 }
 
-def log_event(event_type, site_id=None, user_id=None, data=None):
+def log_event(event_type, site_id=None, user_id=None, data=None, **kwargs):
     """Записывает событие в таблицу events в Supabase."""
     try:
+        event_data = {**(data or {}), **kwargs}
         supabase.table('events').insert({
             'site_id': site_id, 'user_id': user_id, 'event_type': event_type,
-            'event_data': data or {}, 'created_at': datetime.utcnow().isoformat()
+            'event_data': event_data, 'created_at': datetime.utcnow().isoformat()
         }).execute()
     except Exception as e:
-        print(f'[EVENT ERROR] {e}')
+        print(f'[EVENT ERROR] {e}', flush=True)
