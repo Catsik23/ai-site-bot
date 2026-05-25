@@ -40,10 +40,12 @@ def index():
 @app.route('/demo', methods=['POST'])
 def demo():
     """Демо-эндпоинт: парсит сайт, генерирует FAQ и нейро-карточку."""
-    ip = request.remote_addr or 'unknown'
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr) or 'unknown'
+    if ',' in ip:
+        ip = ip.split(',')[0].strip()
     allowed, remaining = check_demo_limit(ip)
     if not allowed:
-        return jsonify({'success': False, 'message': 'Лимит демо исчерпан. Попробуйте через час или зарегистрируйтесь.'})
+        return jsonify({'success': False, 'message': 'Лимит демо исчерпан. Попробуйте через час или зарегистрируйтесь — первые 7 дней бесплатно.', 'remaining': 0})
     
     from shared.utils import parse_site, ai_visibility_audit
     from services.ai.app import generate_faq
@@ -88,7 +90,7 @@ def demo():
     return jsonify({
         'success': True, 'domain': result['domain'], 'title': result['title'],
         'pages_count': pages_found, 'ai_visibility_score': audit['score'], 'ai_visibility_details': audit['details'],
-        'faq': faq, 'neuro_card_url': f'/neuro/{filename}', 'site_id': demo_site_id,
+        'faq': faq, 'neuro_card_url': f'/neuro/{filename}', 'site_id': demo_site_id, 'remaining': remaining,
     })
 
 @app.route('/payment')
