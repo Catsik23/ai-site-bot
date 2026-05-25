@@ -38,7 +38,7 @@ def demo():
     if not result['success']:
         return jsonify(result)
 
-    audit = ai_visibility_audit(result['text'])
+    audit = ai_visibility_audit(result['text'], result.get('html', ''))
     faq = generate_faq(result['title'], result['text'], result['phones'], result['emails'])
     filename = generate_neuro_card_static(result['domain'], result['title'], result['text'], result['phones'], result['emails'], faq, None)
 

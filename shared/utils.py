@@ -6,16 +6,19 @@ def parse_site(url):
     """Парсит сайт, возвращает словарь с domain, title, text, phones, emails."""
     if not url.startswith('http'): url = 'https://' + url
     headers = {'User-Agent': 'Mozilla/5.0'}
-    try: response = requests.get(url, headers=headers, timeout=15)
-    except: response = requests.get(url.replace('https://','http://'), headers=headers, timeout=15, verify=False)
-    response.encoding = 'utf-8'
+    try:
+        response = requests.get(url, headers=headers, timeout=15)
+    except requests.RequestException:
+        return {'success': False, 'message': f'Failed to fetch {url}'}
+    response.encoding = response.apparent_encoding
     soup = BeautifulSoup(response.text, 'html.parser')
     title = soup.title.string.strip() if soup.title else 'Site'
     domain = urlparse(url).netloc
-    text = soup.get_text(separator=' ', strip=True)
+    html = response.text
+text = soup.get_text(separator=' ', strip=True)
     phones = re.findall(r'[\+\(]?[1-9][0-9 .\-\(\)]{8,}[0-9]', text)
     emails = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', text)
-    return {'success': True, 'domain': domain, 'title': title[:100], 'text': text[:12000], 'phones': phones[:2], 'emails': emails[:2]}
+    return {'success': True, 'domain': domain, 'title': title[:100], 'text': text[:12000], 'html': html[:12000], 'phones': phones[:2], 'emails': emails[:2]}
 
 def detect_site_type(text):
     """Определяет тип сайта: shop/service/b2b/food/general."""
@@ -38,12 +41,12 @@ def chunk_text(text, chunk_size=500):
     if current: chunks.append(current.strip())
     return chunks[:30]
 
-def ai_visibility_audit(text):
+def ai_visibility_audit(text, html=''):
     """AI Visibility Audit: оценка видимости сайта для нейросетей (0-100)."""
     score, details = 0, []
     if re.search(r'(?:вопрос|ответ|faq|част)', text, re.IGNORECASE): score += 25; details.append('FAQ found')
     else: details.append('No FAQ')
-    if re.search(r'application/ld\+json', text): score += 25; details.append('Schema.org found')
+    if re.search(r'application/ld\+json', html): score += 25; details.append('Schema.org found')
     else: details.append('No Schema.org')
     if re.findall(r'[\+\(]?[1-9][0-9 .\-\(\)]{8,}[0-9]', text): score += 15; details.append('Contacts found')
     else: details.append('No contacts')
