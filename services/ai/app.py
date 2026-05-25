@@ -8,8 +8,8 @@ ai_bp = Blueprint('ai', __name__)
 YANDEX_API_KEY = os.environ.get('YANDEX_API_KEY', '')
 YANDEX_FOLDER_ID = os.environ.get('YANDEX_FOLDER_ID', '')
 if not YANDEX_API_KEY or not YANDEX_FOLDER_ID:
-    import sys
     print('[WARNING] YANDEX_API_KEY or YANDEX_FOLDER_ID not set — AI features disabled', file=sys.stderr, flush=True)
+
 
 def generate_faq(title, text, phones, emails):
     if not YANDEX_API_KEY or not YANDEX_FOLDER_ID:
@@ -17,26 +17,23 @@ def generate_faq(title, text, phones, emails):
 
     prompt = (
         f"Сгенерируй 10 вопросов и ответов для FAQ сайта \"{title}\". "
-        "Используй ТОЛЬКО информацию из текста сайта. Пиши строго на русском языке.\n\n"
-        "Формат вывода (каждый вопрос и ответ с новой строки):\n"
-        "Вопрос: <текст вопроса>\n"
-        "Ответ: <текст ответа>\n\n"
-        "Категории: о компании/услугах, цены, доставка, контакты, гарантии, как заказать.\n\n"
+        "Используй ТОЛЬКО информацию из текста сайта. Пиши строго на русском.\n\n"
+        "Верни ТОЛЬКО валидный JSON-массив без markdown-форматирования:\n"
+        '[{"q": "вопрос", "a": "ответ", "category": "категория"}, ...]\n\n'
+        "Категории: about, pricing, delivery, contacts, guarantees, ordering.\n"
+        "Не добавляй комментарии. Не оборачивай в ```json```.\n\n"
         f"Текст сайта:\n<site_content>\n{text[:4000]}\n</site_content>"
     )
 
     try:
         resp = requests.post(
             "https://llm.api.cloud.yandex.net/foundationModels/v1/completion",
-            headers={
-                "Authorization": f"Api-Key {YANDEX_API_KEY}",
-                "x-folder-id": YANDEX_FOLDER_ID
-            },
+            headers={"Authorization": f"Api-Key {YANDEX_API_KEY}", "x-folder-id": YANDEX_FOLDER_ID},
             json={
                 "modelUri": f"gpt://{YANDEX_FOLDER_ID}/yandexgpt-lite",
-                "completionOptions": {"maxTokens": 1500, "temperature": 0.3},
+                "completionOptions": {"maxTokens": 1500, "temperature": 0.2},
                 "messages": [
-                    {"role": "system", "text": "Ты генератор FAQ для сайтов. Отвечай строго в заданном формате."},
+                    {"role": "system", "text": "Ты генератор FAQ. Возвращай ТОЛЬКО JSON-массив."},
                     {"role": "user", "text": prompt}
                 ]
             },
@@ -60,21 +57,17 @@ def generate_faq(title, text, phones, emails):
 
 
 def _parse_faq_json(raw_text, title, phones, emails):
-    """Парсит JSON-ответ от YandexGPT, fallback на regex."""
     clean = raw_text.strip()
-    # Убираем markdown-обёртки ```json ... ```
     if clean.startswith('```'):
         clean = re.sub(r'^```(?:json)?\s*', '', clean)
         clean = re.sub(r'\s*```$', '', clean)
         clean = clean.strip()
-    
     try:
         faq = json.loads(clean)
         if isinstance(faq, list) and len(faq) > 0 and 'q' in faq[0]:
             return faq[:10]
     except (json.JSONDecodeError, ValueError):
         pass
-    
     return _parse_faq_regex(raw_text, title, phones, emails)
 
 
@@ -83,15 +76,12 @@ def _parse_faq_regex(raw_text, title, phones, emails):
     lines = raw_text.split('\n')
     current_q = None
     current_a = []
-
     for line in lines:
         line = line.strip()
         if not line:
             continue
-
         q_match = re.match(r'(?:Вопрос|Q)\s*[:.]?\s*(.*)', line, re.IGNORECASE)
         a_match = re.match(r'(?:Ответ|A)\s*[:.]?\s*(.*)', line, re.IGNORECASE)
-
         if q_match:
             if current_q and current_a:
                 qa_list.append({'q': current_q, 'a': ' '.join(current_a)})
@@ -103,14 +93,12 @@ def _parse_faq_regex(raw_text, title, phones, emails):
         else:
             if current_q and line:
                 current_a.append(line)
-
     if current_q and current_a:
         qa_list.append({'q': current_q, 'a': ' '.join(current_a)})
-
     if qa_list:
         return qa_list[:10]
-
     return _fallback_faq(title, phones, emails)
+
 
 def _fallback_faq(title, phones, emails):
     faq = [
@@ -123,6 +111,7 @@ def _fallback_faq(title, phones, emails):
         faq.append({'q': 'Куда написать?', 'a': f'Email: {emails[0]}'})
     faq.append({'q': 'Где посмотреть цены?', 'a': 'Цены указаны на сайте или уточняйте по телефону.'})
     return faq
+
 
 @ai_bp.route('/api/generate-faq', methods=['POST'])
 def api_generate_faq():
