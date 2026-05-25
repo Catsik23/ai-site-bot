@@ -159,12 +159,12 @@ def add_site():
             try:
                 run_indexing(url, site_id)
             except Exception as e:
-                print(f"Indexing error: {e}")
+                log_event('pipeline_indexing_error', site_id=site_id, user_id=user_id, error=str(e))
             
             try:
                 faq = generate_faq(result['title'], result['text'], result['phones'], result['emails'])
             except Exception as e:
-                print(f"FAQ error: {e}")
+                log_event('pipeline_faq_error', site_id=site_id, user_id=user_id, error=str(e))
             
             try:
                 filename = generate_neuro_card_static(
@@ -173,13 +173,18 @@ def add_site():
                 )
                 card_url = f'/neuro/{filename}'
             except Exception as e:
-                print(f"Card error: {e}")
+                log_event('pipeline_card_error', site_id=site_id, user_id=user_id, error=str(e))
             
-            supabase.table('sites').update({
-                'faq': json_module.dumps(faq, ensure_ascii=False),
-                'neuro_card_url': card_url,
-                'neuro_card_active': True
-            }).eq('id', site_id).execute()
+            try:
+                supabase.table('sites').update({
+                    'faq': json_module.dumps(faq, ensure_ascii=False),
+                    'faq_count': len(faq),
+                    'neuro_card_url': card_url,
+                    'neuro_card_active': bool(faq and card_url)
+                }).eq('id', site_id).execute()
+                log_event('pipeline_completed', site_id=site_id, user_id=user_id)
+            except Exception as e:
+                log_event('pipeline_update_error', site_id=site_id, user_id=user_id, error=str(e))
         
         Thread(target=run_pipeline, args=(url, site_id, result, session['user_id']), daemon=True).start()
 
