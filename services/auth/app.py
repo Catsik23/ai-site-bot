@@ -144,44 +144,47 @@ def add_site():
         
         site_id = site_result.data[0]['id']
 
-        # === ЗАПУСКАЕМ КОНВЕЙЕР (ПРЯМЫЕ ВЫЗОВЫ) ===
+        # === ЗАПУСКАЕМ КОНВЕЙЕР В ФОНЕ ===
+        from threading import Thread
         
-        # 1. Индексация чанков и сущностей
-        from services.crawler.app import run_indexing
-        try:
-            run_indexing(url, site_id)
-        except Exception as e:
-            print(f"Indexing error: {e}")
-
-        # 2. Генерация FAQ
-        from services.ai.app import generate_faq
-        faq = []
-        try:
-            faq = generate_faq(result['title'], result['text'], result['phones'], result['emails'])
-        except Exception as e:
-            print(f"FAQ error: {e}")
-
-        # 3. Создание нейро-карточки
-        from services.neurocard.app import generate_neuro_card_static
-        card_url = ''
-        try:
-            filename = generate_neuro_card_static(
-                result['domain'], result['title'], result['text'],
-                result['phones'], result['emails'], faq, site_id
-            )
-            card_url = f'/neuro/{filename}'
-        except Exception as e:
-            print(f"Card error: {e}")
-
-        # Обновляем сайт с FAQ и URL карточки
-        supabase.table('sites').update({
-            'faq': json_module.dumps(faq, ensure_ascii=False),
-            'neuro_card_url': card_url,
-            'neuro_card_active': True
-        }).eq('id', site_id).execute()
+        def run_pipeline(url, site_id, result, user_id):
+            import json as json_module
+            from services.crawler.app import run_indexing
+            from services.ai.app import generate_faq
+            from services.neurocard.app import generate_neuro_card_static
+            
+            faq = []
+            card_url = ''
+            
+            try:
+                run_indexing(url, site_id)
+            except Exception as e:
+                print(f"Indexing error: {e}")
+            
+            try:
+                faq = generate_faq(result['title'], result['text'], result['phones'], result['emails'])
+            except Exception as e:
+                print(f"FAQ error: {e}")
+            
+            try:
+                filename = generate_neuro_card_static(
+                    result['domain'], result['title'], result['text'],
+                    result['phones'], result['emails'], faq, site_id
+                )
+                card_url = f'/neuro/{filename}'
+            except Exception as e:
+                print(f"Card error: {e}")
+            
+            supabase.table('sites').update({
+                'faq': json_module.dumps(faq, ensure_ascii=False),
+                'neuro_card_url': card_url,
+                'neuro_card_active': True
+            }).eq('id', site_id).execute()
+        
+        Thread(target=run_pipeline, args=(url, site_id, result, session['user_id'])).start()
 
         log_event('site_added', site_id=site_id, user_id=session['user_id'])
-        flash('Сайт добавлен!', 'success')
+        flash('Сайт добавлен! Индексация займёт 1-2 минуты.', 'success')
         return redirect(url_for('auth.dashboard'))
 
     return render_template('pages/add_site.html')
