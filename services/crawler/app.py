@@ -17,12 +17,13 @@ def api_index_site():
     if not result['success']: return jsonify(result)
     chunks = chunk_text(result['text'])
     for chunk in chunks:
-        supabase.table('knowledge_chunks').insert({'site_id':site_id,'chunk_text':chunk,'importance_score':3 if classify_chunk_topic(chunk) in ('pricing','delivery','contacts') else 1,'char_count':len(chunk)}).execute()
+        topic = classify_chunk_topic(chunk)
+        supabase.table('knowledge_chunks').insert({'site_id':site_id,'chunk_text':chunk,'topic':topic,'importance_score':3 if topic in ('pricing','delivery','contacts') else 1,'char_count':len(chunk)}).execute()
     for entity in extract_entities(result['text'], result['domain']):
         supabase.table('extracted_entities').insert({'site_id':site_id,'entity_type':entity['type'],'entity_value':entity['value'],'confidence':entity['confidence']}).execute()
     supabase.table('sites').update({'site_type':detect_site_type(result['text']),'contacts':json.dumps({'phones':result['phones'],'emails':result['emails']}),'last_indexed': datetime.utcnow().isoformat()}).eq('id',site_id).execute()
     log_event('crawl_completed', site_id=site_id)
-    return jsonify({'success':True,'chunks_count':len(chunks),'entities_count':len(extract_entities(result['text'],result['domain']))})
+    return jsonify({'success':True,'chunks_count':len(chunks),'entities_count':len(entities)})
 
 @crawler_bp.route('/api/parse', methods=['POST'])
 def api_parse():
