@@ -98,14 +98,9 @@ def dashboard():
     sites = supabase.table('sites').select('*').eq('user_id', session['user_id']).execute()
     total_faq = 0
     for site in sites.data:
-        faq = site.get('faq', [])
-        if isinstance(faq, str):
-            try:
-                faq = json_module.loads(faq)
-            except:
-                faq = []
-        site['faq_count'] = len(faq)
-        total_faq += len(faq)
+        faq_count = site.get('faq_count', 0) or 0
+        site['faq_count'] = faq_count
+        total_faq += faq_count
     return render_template('pages/dashboard.html', 
                           sites=sites.data, 
                           total_faq=total_faq,
