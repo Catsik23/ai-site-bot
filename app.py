@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from datetime import datetime
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -22,6 +23,9 @@ app.register_blueprint(neurocard_bp)
 def index():
     """Главная страница — лендинг с AEO-аудитом."""
     return render_template('pages/index.html')
+
+# Rate limiting: 3 демо в час с одного IP
+demo_limits = {}
 
 @app.route('/demo', methods=['POST'])
 def demo():
