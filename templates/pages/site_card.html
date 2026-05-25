@@ -97,12 +97,28 @@
             </div>
             {% set faq_list = site.faq if site.faq is not string else [] %}
             {% if faq_list %}
-                {% for item in faq_list[:5] %}
-                <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div id="faqContainer">
+                {% for item in faq_list %}
+                <div class="faq-item faq-hidden" style="display:none;" onclick="this.classList.toggle('open')">
                     <div class="faq-q" style="padding:8px 12px; font-size:0.8rem;">{{ item.q }} <span>▾</span></div>
                     <div class="faq-a">{{ item.a }}</div>
                 </div>
                 {% endfor %}
+                </div>
+                {% if faq_list|length > 4 %}
+                <button class="btn btn-ghost text-sm w-full mt-1" onclick="toggleAllFaq()" id="faqToggleBtn">Показать ещё {{ faq_list|length - 4 }} ↓</button>
+                {% endif %}
+                <script>
+                    document.querySelectorAll('.faq-hidden').forEach(function(el, i) { if (i < 4) el.style.display = 'block'; });
+                    var faqExpanded = false;
+                    function toggleAllFaq() {
+                        faqExpanded = !faqExpanded;
+                        document.querySelectorAll('.faq-hidden').forEach(function(el, i) {
+                            el.style.display = faqExpanded ? 'block' : (i < 4 ? 'block' : 'none');
+                        });
+                        document.getElementById('faqToggleBtn').innerHTML = faqExpanded ? 'Скрыть ↑' : 'Показать ещё {{ faq_list|length - 4 }} ↓';
+                    }
+                </script>
             {% else %}
                 <p class="text-muted text-sm">Ещё не сгенерирован</p>
             {% endif %}
