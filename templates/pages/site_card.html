@@ -78,6 +78,8 @@
         background: rgba(52,211,153,0.1);
         color: #34d399;
     }
+    
+    .faq-hidden { display: none; }
     .neuro-status.off {
         background: rgba(255,255,255,0.03);
         color: #555;
@@ -99,7 +101,7 @@
             {% if site.faq_list %}
                 <div id="faqContainer">
                 {% for item in site.faq_list %}
-                <div class="faq-item {% if loop.index > 4 %}faq-hidden{% endif %}" {% if loop.index > 4 %}style="display:none;"{% endif %} onclick="this.classList.toggle('open')">
+                <div class="faq-item {% if loop.index > 4 %}faq-hidden{% endif %}"  onclick="this.classList.toggle('open')">
                     <div class="faq-q" style="padding:8px 12px; font-size:0.8rem;">{{ item.q }} <span>▾</span></div>
                     <div class="faq-a">{{ item.a }}</div>
                 </div>
