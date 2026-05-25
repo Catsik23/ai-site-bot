@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify, send_from_directory
-import re, sys, os, requests, html as html_module, json as json_module
+import re, sys, os, requests, html as html_module, json as json_module, time
 
 from shared.supabase import supabase
 from shared.logger import log_event
@@ -8,6 +8,7 @@ from shared.ai_client import ask_yandexgpt
 neurocard_bp = Blueprint('neurocard', __name__)
 STATIC_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'neurocards')
 os.makedirs(STATIC_DIR, exist_ok=True)
+_cache = {}
 
 # Адаптивные промпты
 PROMPTS = {
@@ -27,7 +28,7 @@ def generate_neuro_card_static(domain, title, text, phones, emails, faq, site_id
     html = f'<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>{html_module.escape(title)}</title><style>body{{font-family:Arial;max-width:800px;margin:0 auto;padding:20px;background:#f9fafb;color:#111}}h1{{font-size:2rem}}h2{{font-size:1.5rem;margin-top:30px}}.faq-item{{background:#fff;padding:15px;margin:10px 0;border-radius:10px}}.faq-item h3{{color:#7c3aed}}.contact{{background:#eef2ff;padding:15px;border-radius:10px;margin:20px 0}}</style></head><body><h1>{html_module.escape(title)}</h1><div class="contact">{contact or '<p>Контакты на сайте</p>'}</div><h2>FAQ</h2>{faq_html}<p style="margin-top:40px;color:#888">Нейро-карточка сайта {html_module.escape(domain)}</p></body></html>'
 
     # Schema.org JSON-LD
-    ld_json = {
+    ld_json_faq = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
         "mainEntity": [
@@ -35,7 +36,16 @@ def generate_neuro_card_static(domain, title, text, phones, emails, faq, site_id
             for i in faq
         ]
     }
-    html += f'<script type="application/ld+json">{json_module.dumps(ld_json, ensure_ascii=False)}</script>'
+    ld_json_org = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": html_module.escape(title),
+        "url": f"https://{html_module.escape(domain)}",
+        "telephone": phones[0] if phones else "",
+        "email": emails[0] if emails else ""
+    }
+    html += f'<script type="application/ld+json">{json_module.dumps(ld_json_faq, ensure_ascii=False)}</script>'
+    html += f'<script type="application/ld+json">{json_module.dumps(ld_json_org, ensure_ascii=False)}</script>'
 
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(html)
@@ -76,7 +86,14 @@ def bot_chat():
     # Ищем сайт в Supabase
     if domain:
         try:
-            site = supabase.table('sites').select('id,site_type').eq('domain', domain).execute()
+            # Кэш 5 минут
+            cache_key = f'bot_{domain}'
+            cached = _cache.get(cache_key, {})
+            if cached and time.time() - cached.get('ts', 0) < 300:
+                site = cached['site']
+            else:
+                site = supabase.table('sites').select('id,site_type').eq('domain', domain).execute()
+                _cache[cache_key] = {'site': site, 'ts': time.time()}
             if site.data:
                 site_id = site.data[0]['id']
                 site_type = site.data[0].get('site_type', 'general')
@@ -92,5 +109,5 @@ def bot_chat():
 
     system_prompt = PROMPTS.get(site_type, PROMPTS['general']) + '\nИНФО:\n' + context[:3000]
 
-    answer = ask_yandexgpt(question, system_prompt)
+    answer = ask_yandexgpt(question, context, system_prompt)
     return jsonify({'answer': answer})
