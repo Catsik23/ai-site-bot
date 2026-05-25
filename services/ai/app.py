@@ -7,6 +7,9 @@ from shared.logger import log_event
 ai_bp = Blueprint('ai', __name__)
 YANDEX_API_KEY = os.environ.get('YANDEX_API_KEY', '')
 YANDEX_FOLDER_ID = os.environ.get('YANDEX_FOLDER_ID', '')
+if not YANDEX_API_KEY or not YANDEX_FOLDER_ID:
+    import sys
+    print('[WARNING] YANDEX_API_KEY or YANDEX_FOLDER_ID not set — AI features disabled', file=sys.stderr, flush=True)
 
 def generate_faq(title, text, phones, emails):
     if not YANDEX_API_KEY or not YANDEX_FOLDER_ID:
@@ -66,8 +69,8 @@ def _parse_faq(raw_text, title, phones, emails):
         if not line:
             continue
 
-        q_match = re.match(r'(?:Вопрос|Q|В)\s*[:.]?\s*(.*)', line, re.IGNORECASE)
-        a_match = re.match(r'(?:Ответ|A|О)\s*[:.]?\s*(.*)', line, re.IGNORECASE)
+        q_match = re.match(r'(?:Вопрос|Q:)\s*[:.]?\s*(.*)', line, re.IGNORECASE)
+        a_match = re.match(r'(?:Ответ|A:)\s*[:.]?\s*(.*)', line, re.IGNORECASE)
 
         if q_match:
             if current_q and current_a:
