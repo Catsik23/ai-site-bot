@@ -18,13 +18,6 @@
         <div class="text-muted text-sm">сайтов добавлено</div>
     </div>
     <div class="card" style="text-align:center;">
-        {% set total_faq = 0 %}
-        {% if sites %}
-            {% for site in sites %}
-                {% set faq_count = (site.faq or [])|length if site.faq is not string else 0 %}
-                {% set total_faq = total_faq + faq_count %}
-            {% endfor %}
-        {% endif %}
         <div style="font-size:2rem; font-weight:800; color:var(--neon);">{{ total_faq }}</div>
         <div class="text-muted text-sm">FAQ сгенерировано</div>
     </div>
