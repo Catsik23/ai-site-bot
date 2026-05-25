@@ -18,7 +18,7 @@
 
 <!-- Панель "полицейская мигалка" -->
 {% if site.neuro_card_url and site.neuro_card_active %}
-<a href="{{ site.neuro_card_url }}" target="_blank" style="text-decoration:none;">
+<a href="{{ site.neuro_card_url }}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
     <div class="neuro-panel active">
         <div class="neuro-btn">НЕЙРО-КАРТОЧКА</div>
         <div class="neuro-status on">● АКТИВНА</div>
@@ -102,8 +102,9 @@
                 <div id="faqContainer">
                 {% for item in site.faq_list %}
                 <div class="faq-item {% if loop.index > 4 %}faq-hidden{% endif %}"  onclick="this.classList.toggle('open')">
-                    <div class="faq-q" style="padding:8px 12px; font-size:0.8rem;">{{ item.q }} <span>▾</span></div>
-                    <div class="faq-a">{{ item.a }}</div>
+                    <div class="faq-q" style="padding:8px 12px; font-size:0.8rem;">{{ item.q | e }} <span>▾</span></div>
+                    <div class="faq-a">{{ item.a | e | replace("
+", "<br>"|safe) }}</div>
                 </div>
                 {% endfor %}
                 </div>
