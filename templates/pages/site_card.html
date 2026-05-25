@@ -16,12 +16,22 @@
         <h1 style="font-size:1.5rem; margin-bottom:0;">{{ site.domain or site.url }}</h1>
         <p class="text-muted text-sm">{{ site.site_type or 'general' }}</p>
     </div>
-    {% if site.neuro_card_active %}
-        <span class="badge badge-active">Активна</span>
-    {% else %}
-        <span class="badge badge-paused">Приостановлена</span>
-    {% endif %}
 </div>
+
+<!-- Нейро-карточка: панель -->
+{% if site.neuro_card_url and site.neuro_card_active %}
+<a href="{{ site.neuro_card_url }}" target="_blank" style="text-decoration:none;">
+    <div class="card mb-1 flex-between" style="padding:12px 16px; border:1px solid transparent; border-image: linear-gradient(90deg, #c084fc, #a78bfa, #6366f1, #22d3ee) 1; background: rgba(124,58,237,0.05);">
+        <span style="font-family:var(--font-mono); font-size:0.9rem; font-weight:600; background: linear-gradient(90deg, #c084fc, #a78bfa, #6366f1, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Нейро-карточка</span>
+        <span class="badge badge-active" style="font-size:0.75rem; padding:4px 10px;">Активна</span>
+    </div>
+</a>
+{% else %}
+<div class="card mb-1 flex-between" style="padding:12px 16px; border:1px solid rgba(255,255,255,0.06); opacity:0.5;">
+    <span style="font-family:var(--font-mono); font-size:0.9rem; font-weight:600; color:var(--text-muted);">Нейро-карточка</span>
+    <span class="badge badge-paused" style="font-size:0.75rem; padding:4px 10px;">Неактивна</span>
+</div>
+{% endif %}
 
 <div class="grid-2">
     <!-- Левая колонка -->
@@ -55,14 +65,6 @@
 
     <!-- Правая колонка -->
     <div>
-        <!-- Нейро-карточка -->
-        {% if site.neuro_card_url %}
-        <div class="card mb-1">
-            <h2 style="font-size:1rem; margin-bottom:8px;">Нейро-карточка</h2>
-            <a href="{{ site.neuro_card_url }}" target="_blank" class="btn btn-primary w-full" style="padding:8px 16px; font-size:0.75rem;">Открыть →</a>
-        </div>
-        {% endif %}
-
         <!-- Статус -->
         <div class="card mb-1">
             <h2 style="font-size:1rem; margin-bottom:8px;">Статус</h2>
@@ -73,10 +75,6 @@
             <div class="flex-between" style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
                 <span class="text-muted text-sm">FAQ</span>
                 <span class="text-sm">{{ (site.faq or [])|length if site.faq is not string else '0' }} шт.</span>
-            </div>
-            <div class="flex-between" style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
-                <span class="text-muted text-sm">Карточка</span>
-                <span class="text-sm">{{ 'Активна' if site.neuro_card_active else 'Нет' }}</span>
             </div>
             <div class="flex-between" style="padding:4px 0;">
                 <span class="text-muted text-sm">Добавлен</span>
