@@ -109,23 +109,17 @@
                 <button class="btn btn-ghost text-sm w-full mt-1" onclick="toggleAllFaq()" id="faqToggleBtn">Показать ещё {{ faq_list|length - 4 }} ↓</button>
                 {% endif %}
                 <script>
-                    (function() {
-                        var faqExpanded = false;
-                        window.toggleAllFaq = function() {
-                            faqExpanded = !faqExpanded;
-                            document.querySelectorAll('.faq-hidden').forEach(function(el, i) {
-                                el.style.display = faqExpanded ? 'block' : (i < 4 ? 'block' : 'none');
-                            });
-                            var btn = document.getElementById('faqToggleBtn');
-                            btn.innerHTML = faqExpanded ? 'Скрыть ↑' : 'Показать ещё {{ faq_list|length - 4 }} ↓';
-                        };
-                        // Показываем первые 4 после загрузки DOM
-                        document.addEventListener('DOMContentLoaded', function() {
-                            document.querySelectorAll('.faq-hidden').forEach(function(el, i) {
-                                if (i < 4) el.style.display = 'block';
-                            });
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.querySelectorAll('.faq-hidden').forEach(function(el, i) { if (i < 4) el.style.display = 'block'; });
+                    });
+                    var faqExpanded = false;
+                    function toggleAllFaq() {
+                        faqExpanded = !faqExpanded;
+                        document.querySelectorAll('.faq-hidden').forEach(function(el, i) {
+                            el.style.display = faqExpanded ? 'block' : (i < 4 ? 'block' : 'none');
                         });
-                    })();
+                        document.getElementById('faqToggleBtn').innerHTML = faqExpanded ? 'Скрыть ↑' : 'Показать ещё {{ faq_list|length - 4 }} ↓';
+                    }
                 </script>
             {% else %}
                 <p class="text-muted text-sm">Ещё не сгенерирован</p>
@@ -157,7 +151,7 @@
         </div>
 
         <div class="card mb-1" style="border-color: rgba(248,113,113,0.2);">
-            <form method="POST" action="/dashboard/sites/{{ site.id }}/delete" onsubmit="return confirm('Удалить сайт {{ site.domain | e | replace("'", "\\'") }}?');">
+            <form method="POST" action="/dashboard/sites/{{ site.id }}/delete" data-domain="{{ site.domain | e }}" onsubmit="return confirm('Удалить сайт ' + this.dataset.domain + '?');">
                 <button type="submit" class="btn btn-danger w-full" style="padding:8px 16px; font-size:0.75rem;">Удалить сайт</button>
             </form>
         </div>
