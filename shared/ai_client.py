@@ -15,7 +15,7 @@ def get_model():
         _model = SentenceTransformer('intfloat/multilingual-e5-small')
     return _model
 
-def ask_yandexgpt(question, context):
+def ask_yandexgpt(question, context, system_prompt=None):
     if not YANDEX_API_KEY or not YANDEX_FOLDER_ID:
         return simple_search(question, context)
     try:

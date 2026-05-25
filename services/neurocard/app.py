@@ -31,7 +31,7 @@ def generate_neuro_card_static(domain, title, text, phones, emails, faq, site_id
         "@context": "https://schema.org",
         "@type": "FAQPage",
         "mainEntity": [
-            {"@type": "Question", "name": i["q"], "acceptedAnswer": {"@type": "Answer", "text": i["a"]}}
+            {"@type": "Question", "name": html_module.escape(i["q"]), "acceptedAnswer": {"@type": "Answer", "text": html_module.escape(i["a"])}}
             for i in faq
         ]
     }
@@ -83,8 +83,8 @@ def bot_chat():
                 chunks = supabase.table('knowledge_chunks')                     .select('chunk_text')                     .eq('site_id', site_id)                     .order('importance_score', desc=True)                     .limit(10).execute()
                 if chunks.data:
                     context = ' '.join([c['chunk_text'] for c in chunks.data])
-        except:
-            pass
+        except Exception as e:
+            log_event('bot_context_error', error=str(e), domain=domain)
 
     # Fallback
     if not context:
@@ -92,27 +92,5 @@ def bot_chat():
 
     system_prompt = PROMPTS.get(site_type, PROMPTS['general']) + '\nИНФО:\n' + context[:3000]
 
-    from shared.ai_client import YANDEX_API_KEY, YANDEX_FOLDER_ID
-    if YANDEX_API_KEY and YANDEX_FOLDER_ID:
-        try:
-            response = requests.post(
-                "https://llm.api.cloud.yandex.net/foundationModels/v1/completion",
-                headers={"Authorization": f"Api-Key {YANDEX_API_KEY}", "x-folder-id": YANDEX_FOLDER_ID},
-                json={
-                    "modelUri": f"gpt://{YANDEX_FOLDER_ID}/yandexgpt-lite",
-                    "completionOptions": {"maxTokens": 200, "temperature": 0.3},
-                    "messages": [
-                        {"role": "system", "text": system_prompt},
-                        {"role": "user", "text": question}
-                    ]
-                },
-                timeout=10
-            )
-            data = response.json()
-            if "result" in data:
-                return jsonify({'answer': data["result"]["alternatives"][0]["message"]["text"]})
-        except:
-            pass
-
-    answer = ask_yandexgpt(question, context)
+    answer = ask_yandexgpt(question, system_prompt)
     return jsonify({'answer': answer})
