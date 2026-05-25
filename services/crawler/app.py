@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 import sys, json
+from datetime import datetime
 from shared.utils import parse_site, detect_site_type, ai_visibility_audit, chunk_text, extract_entities, classify_chunk_topic
 from shared.supabase import supabase
 from shared.logger import log_event
