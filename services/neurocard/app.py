@@ -97,9 +97,19 @@ def bot_chat():
             if site.data:
                 site_id = site.data[0]['id']
                 site_type = site.data[0].get('site_type', 'general')
-                chunks = supabase.table('knowledge_chunks')                     .select('chunk_text')                     .eq('site_id', site_id)                     .order('importance_score', desc=True)                     .limit(10).execute()
-                if chunks.data:
-                    context = ' '.join([c['chunk_text'] for c in chunks.data])
+                chunk_key = f'chunks_{site_id}'
+                cached_chunks = _cache.get(chunk_key, {})
+                if cached_chunks and time.time() - cached_chunks.get('ts', 0) < 300:
+                    context = cached_chunks['data']
+                else:
+                    chunks = supabase.table('knowledge_chunks') \
+                        .select('chunk_text') \
+                        .eq('site_id', site_id) \
+                        .order('importance_score', desc=True) \
+                        .limit(10).execute()
+                    if chunks.data:
+                        context = ' '.join([c['chunk_text'] for c in chunks.data])
+                        _cache[chunk_key] = {'data': context, 'ts': time.time()}
         except Exception as e:
             log_event('bot_context_error', error=str(e), domain=domain)
 
