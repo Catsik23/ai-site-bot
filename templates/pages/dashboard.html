@@ -11,31 +11,73 @@
     </div>
 </div>
 
-<h1>Мои сайты</h1>
+<!-- Приветствие -->
+<div class="mb-3">
+    <h1 style="font-size:1.8rem;">👋 Здравствуйте</h1>
+    <p class="text-muted">{{ session.get('user_email', '') }}</p>
+</div>
+
+<!-- Метрики -->
+<div class="grid-2 mb-3">
+    <div class="card" style="text-align:center;">
+        <div style="font-size:2rem; font-weight:800; color:var(--neon);">{{ sites|length if sites else 0 }}</div>
+        <div class="text-muted text-sm">сайтов добавлено</div>
+    </div>
+    <div class="card" style="text-align:center;">
+        {% set total_faq = 0 %}
+        {% if sites %}
+            {% for site in sites %}
+                {% set faq_count = (site.faq or [])|length if site.faq is not string else 0 %}
+                {% set total_faq = total_faq + faq_count %}
+            {% endfor %}
+        {% endif %}
+        <div style="font-size:2rem; font-weight:800; color:var(--neon);">{{ total_faq }}</div>
+        <div class="text-muted text-sm">FAQ сгенерировано</div>
+    </div>
+</div>
+
+<!-- Список сайтов -->
+<h2 class="mb-2">Мои сайты</h2>
 
 {% if sites %}
-<div class="grid-2 mt-3">
+<div class="grid-2">
     {% for site in sites %}
     <a href="/dashboard/sites/{{ site.id }}" style="text-decoration:none;">
         <div class="card">
-            <div class="flex-between mb-1">
-                <strong>{{ site.domain or site.url[:40] }}</strong>
+            <div class="flex-between mb-2">
+                <strong style="font-size:1rem;">{{ site.domain or site.url[:40] }}</strong>
                 {% if site.neuro_card_active %}
                     <span class="badge badge-active">Активна</span>
                 {% else %}
                     <span class="badge badge-paused">Приостановлена</span>
                 {% endif %}
             </div>
-            <div class="text-muted text-sm">{{ site.site_type or 'general' }} • FAQ: {{ (site.faq or [])|length if site.faq is not string else '0' }} шт.</div>
+            <div class="text-muted text-sm mb-2">{{ site.site_type or 'general' }}</div>
+            <div class="flex-between">
+                <span class="text-muted text-sm">FAQ: {{ (site.faq or [])|length if site.faq is not string else '0' }} шт.</span>
+                <span style="color:var(--accent-glow); font-size:0.8rem;">Открыть →</span>
+            </div>
         </div>
     </a>
     {% endfor %}
 </div>
 {% else %}
-<div class="card text-center mt-3" style="padding:60px 20px;">
-    <h2>У вас пока нет сайтов</h2>
-    <p class="text-muted">Добавьте первый сайт и получите нейро-карточку с FAQ</p>
-    <a href="/dashboard/sites/new" class="btn btn-primary mt-2">+ Добавить сайт</a>
+<div class="card text-center" style="padding:60px 20px;">
+    <div style="font-size:3rem; margin-bottom:16px;">🛸</div>
+    <h2>Готовы запустить первый сайт?</h2>
+    <p class="text-muted mb-3">Добавьте сайт — и через 24 часа Алиса начнёт его видеть</p>
+    <a href="/dashboard/sites/new" class="btn btn-primary">+ Добавить сайт</a>
 </div>
 {% endif %}
+
+<!-- Тариф -->
+<div class="card mt-3" style="text-align:center;">
+    <div class="flex-between">
+        <div>
+            <strong>Тариф: {{ session.get('tariff', 'trial') }}</strong>
+            <p class="text-muted text-sm">Подписка активна</p>
+        </div>
+        <a href="/dashboard/settings" class="btn btn-ghost text-sm">Управлять →</a>
+    </div>
+</div>
 {% endblock %}
