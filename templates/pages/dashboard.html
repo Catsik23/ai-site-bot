@@ -41,7 +41,7 @@
             </div>
             <div class="text-muted text-sm mb-2">{{ site.site_type or 'general' }}</div>
             <div class="flex-between">
-                <span class="text-muted text-sm">FAQ: {{ (site.faq or [])|length if site.faq is not string else '0' }} шт.</span>
+                <span class="text-muted text-sm">FAQ: {{ site.faq_count }} шт.</span>
                 <span style="color:var(--accent-glow); font-size:0.8rem;">Открыть →</span>
             </div>
         </div>
@@ -61,7 +61,7 @@
 <div class="card mt-3" style="text-align:center;">
     <div class="flex-between">
         <div>
-            <strong>Тариф: {{ session.get('tariff', 'trial') }}</strong>
+            <strong>Тариф: {{ tariff }}</strong>
             <p class="text-muted text-sm">Подписка активна</p>
         </div>
         <a href="/dashboard/settings" class="btn btn-ghost text-sm">Управлять →</a>

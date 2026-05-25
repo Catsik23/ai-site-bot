@@ -104,8 +104,12 @@ def dashboard():
                 faq = json_module.loads(faq)
             except:
                 faq = []
+        site['faq_count'] = len(faq)
         total_faq += len(faq)
-    return render_template('pages/dashboard.html', sites=sites.data, total_faq=total_faq)
+    return render_template('pages/dashboard.html', 
+                          sites=sites.data, 
+                          total_faq=total_faq,
+                          tariff=session.get('tariff', 'trial'))
 
 @auth_bp.route('/dashboard/sites/new', methods=['GET', 'POST'])
 @login_required
