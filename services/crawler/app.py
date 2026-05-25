@@ -51,7 +51,7 @@ def api_parse():
     result = parse_site(data.get('url','').strip())
     if not result['success']:
         return jsonify(result)
-    return jsonify({'success':True,'domain':result['domain'],'title':result['title'],'text':result['text'][:5000],'chunks':chunk_text(result['text']),'ai_visibility_score':ai_visibility_audit(result['text'])['score']})
+    return jsonify({'success':True,'domain':result['domain'],'title':result['title'],'text':result['text'][:5000],'chunks':chunk_text(result['text']),'ai_visibility_score':ai_visibility_audit(result['text'], result.get('html', ''))['score']})
 
 
 def run_indexing(url, site_id):

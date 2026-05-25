@@ -15,7 +15,8 @@ def parse_site(url):
     title = soup.title.string.strip() if soup.title else 'Site'
     domain = urlparse(url).netloc
     html = response.text
-text = soup.get_text(separator=' ', strip=True)
+    text = soup.get_text(separator='
+', strip=True)
     phones = re.findall(r'[\+\(]?[1-9][0-9 .\-\(\)]{8,}[0-9]', text)
     emails = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', text)
     return {'success': True, 'domain': domain, 'title': title[:100], 'text': text[:12000], 'html': html[:12000], 'phones': phones[:2], 'emails': emails[:2]}
