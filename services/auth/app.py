@@ -188,6 +188,22 @@ def site_card(site_id):
     site_data['contacts'] = json.loads(site_data['contacts']) if isinstance(site_data['contacts'], str) else site_data['contacts']
     return render_template('pages/site_card.html', site=site_data)
 
+
+@auth_bp.route('/dashboard/sites/<site_id>/delete', methods=['POST'])
+@login_required
+def delete_site(site_id):
+    site = supabase.table('sites').select('*').eq('id', site_id).eq('user_id', session['user_id']).execute()
+    if not site.data:
+        flash('Сайт не найден', 'error')
+        return redirect(url_for('auth.dashboard'))
+    
+    supabase.table('sites').delete().eq('id', site_id).execute()
+    supabase.table('knowledge_chunks').delete().eq('site_id', site_id).execute()
+    supabase.table('extracted_entities').delete().eq('site_id', site_id).execute()
+    log_event('site_deleted', site_id=site_id, user_id=session['user_id'])
+    flash('Сайт удалён', 'success')
+    return redirect(url_for('auth.dashboard'))
+
 @auth_bp.route('/dashboard/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
