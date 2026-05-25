@@ -8,7 +8,7 @@ from services.crawler.app import crawler_bp
 from services.neurocard.app import neurocard_bp
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'ai-visibility-secret-2026')
+app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24).hex())
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(ai_bp)
@@ -58,7 +58,7 @@ def demo():
                 'char_count': len(chunk)
             }).execute()
     except Exception as e:
-        pass
+        log_event('demo_chunk_error', data={'error': str(e)})
 
     # Считаем количество найденных страниц
     pages_found = len(result.get('pages', []))
