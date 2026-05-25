@@ -113,7 +113,10 @@ def _parse_faq_regex(raw_text, title, phones, emails):
     return _fallback_faq(title, phones, emails)
 
 def _fallback_faq(title, phones, emails):
-    faq = [{'q': 'Чем вы занимаетесь?', 'a': f'{title} — мы работаем для вас.'}]
+    faq = [
+        {'q': 'Чем вы занимаетесь?', 'a': f'{title} — мы работаем для вас. Подробнее на сайте или по телефону.'},
+        {'q': 'Почему вам доверяют?', 'a': f'Компания {title} дорожит репутацией. Ознакомьтесь с отзывами клиентов на сайте.'},
+    ]
     if phones:
         faq.append({'q': 'Как с вами связаться?', 'a': f'Позвоните: {phones[0]}'})
     if emails:
