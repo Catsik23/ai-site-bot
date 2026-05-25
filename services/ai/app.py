@@ -69,8 +69,8 @@ def _parse_faq(raw_text, title, phones, emails):
         if not line:
             continue
 
-        q_match = re.match(r'(?:Вопрос|Q:)\s*[:.]?\s*(.*)', line, re.IGNORECASE)
-        a_match = re.match(r'(?:Ответ|A:)\s*[:.]?\s*(.*)', line, re.IGNORECASE)
+        q_match = re.match(r'(?:Вопрос|Q)\s*[:.]?\s*(.*)', line, re.IGNORECASE)
+        a_match = re.match(r'(?:Ответ|A)\s*[:.]?\s*(.*)', line, re.IGNORECASE)
 
         if q_match:
             if current_q and current_a:
