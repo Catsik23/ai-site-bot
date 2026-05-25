@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
-from datetime import datetime
+import time
+from collections import defaultdict
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -14,6 +15,18 @@ app.secret_key = os.environ.get('SECRET_KEY')
 if not app.secret_key:
     raise RuntimeError('SECRET_KEY env var is not set')
 
+_demo_limits = defaultdict(list)
+
+def check_demo_limit(ip):
+    now = time.time()
+    window = 3600
+    max_requests = 3
+    _demo_limits[ip] = [ts for ts in _demo_limits[ip] if now - ts < window]
+    if len(_demo_limits[ip]) >= max_requests:
+        return False, 0
+    _demo_limits[ip].append(now)
+    return True, max_requests - len(_demo_limits[ip])
+
 app.register_blueprint(auth_bp)
 app.register_blueprint(ai_bp)
 app.register_blueprint(crawler_bp)
@@ -24,12 +37,14 @@ def index():
     """Главная страница — лендинг с AEO-аудитом."""
     return render_template('pages/index.html')
 
-# Rate limiting: 3 демо в час с одного IP
-demo_limits = {}
-
 @app.route('/demo', methods=['POST'])
 def demo():
     """Демо-эндпоинт: парсит сайт, генерирует FAQ и нейро-карточку."""
+    ip = request.remote_addr or 'unknown'
+    allowed, remaining = check_demo_limit(ip)
+    if not allowed:
+        return jsonify({'success': False, 'message': 'Лимит демо исчерпан. Попробуйте через час или зарегистрируйтесь.'})
+    
     from shared.utils import parse_site, ai_visibility_audit
     from services.ai.app import generate_faq
     from services.neurocard.app import generate_neuro_card_static
