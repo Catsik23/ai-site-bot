@@ -146,42 +146,11 @@ def add_site():
 
         # === ЗАПУСКАЕМ КОНВЕЙЕР В ФОНЕ ===
         from threading import Thread
-        
-        def run_pipeline(url, site_id, result, user_id):
-            import json as json_module
-            from services.crawler.app import run_indexing
-            from services.ai.app import generate_faq
-            from services.neurocard.app import generate_neuro_card_static
-            
-            faq = []
-            card_url = ''
-            
-            try:
-                run_indexing(url, site_id)
-            except Exception as e:
-                print(f"Indexing error: {e}")
-            
-            try:
-                faq = generate_faq(result['title'], result['text'], result['phones'], result['emails'])
-            except Exception as e:
-                print(f"FAQ error: {e}")
-            
-            try:
-                filename = generate_neuro_card_static(
-                    result['domain'], result['title'], result['text'],
-                    result['phones'], result['emails'], faq, site_id
-                )
-                card_url = f'/neuro/{filename}'
-            except Exception as e:
-                print(f"Card error: {e}")
-            
-            supabase.table('sites').update({
-                'faq': json_module.dumps(faq, ensure_ascii=False),
-                'neuro_card_url': card_url,
-                'neuro_card_active': True
-            }).eq('id', site_id).execute()
-        
-        Thread(target=run_pipeline, args=(url, site_id, result, session['user_id'])).start()
+        Thread(
+            target=run_pipeline,
+            args=(url, site_id, result, session['user_id']),
+            daemon=True
+        ).start()
 
         log_event('site_added', site_id=site_id, user_id=session['user_id'])
         flash('Сайт добавлен! Индексация займёт 1-2 минуты.', 'success')
