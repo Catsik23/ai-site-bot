@@ -184,7 +184,7 @@
 
 <div class="hero">
     <h1><span class="neon-text">Алиса</span> видит<br>твой бизнес?</h1>
-    <p class="subtitle">Нейро-карточка за 24 часа. Без правок на сайте.</p>
+    <p class="subtitle">Нейро-карточка в 3 клика. Без правок на сайте.</p>
     <div class="flex flex-center flex-wrap" style="gap:8px;">
         <a href="/register" class="btn btn-primary">Активировать</a>
         <a href="/login" class="btn btn-ghost">Вход</a>
@@ -247,13 +247,19 @@
             <p class="text-muted text-sm mb-2">Бот отвечает на основе данных с сайта</p>
             <div class="card cyber-chat" style="padding:0; overflow:hidden;">
                 <!-- Окно сообщений -->
-                <div id="demoChat" style="height:280px; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:8px; background:rgba(0,0,0,0.3); scrollbar-width:thin; scrollbar-color:var(--neon) transparent;">
+                <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;" id="chatHints">
+                <span onclick="askHint('Какие у вас цены?')" style="cursor:pointer; background:rgba(192,132,252,0.1); border:1px solid rgba(192,132,252,0.2); border-radius:12px; padding:4px 10px; font-size:0.7rem; color:var(--neon-soft);">💰 Цены</span>
+                <span onclick="askHint('Как заказать?')" style="cursor:pointer; background:rgba(192,132,252,0.1); border:1px solid rgba(192,132,252,0.2); border-radius:12px; padding:4px 10px; font-size:0.7rem; color:var(--neon-soft);">📦 Заказ</span>
+                <span onclick="askHint('Какая доставка?')" style="cursor:pointer; background:rgba(192,132,252,0.1); border:1px solid rgba(192,132,252,0.2); border-radius:12px; padding:4px 10px; font-size:0.7rem; color:var(--neon-soft);">🚚 Доставка</span>
+                <span onclick="askHint('Как связаться?')" style="cursor:pointer; background:rgba(192,132,252,0.1); border:1px solid rgba(192,132,252,0.2); border-radius:12px; padding:4px 10px; font-size:0.7rem; color:var(--neon-soft);">📞 Контакты</span>
+            </div>
+            <div id="demoChat" style="height:280px; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:8px; background:rgba(0,0,0,0.3); scrollbar-width:thin; scrollbar-color:var(--neon) transparent;">
                 </div>
                 <!-- Полоска-разделитель с неоном -->
                 <div style="height:1px; background:linear-gradient(90deg, transparent, var(--neon), transparent); opacity:0.5;"></div>
                 <!-- Поле ввода -->
                 <div style="display:flex; gap:0; padding:8px; background:rgba(10,8,30,0.9);">
-                    <input type="text" class="chat-input-cyber" id="chatInput" placeholder="Спросите бота..." onkeypress="if(event.key==='Enter')sendChat()" style="flex:1; padding:12px 16px; background:rgba(0,0,0,0.4); border:1px solid var(--border); border-right:none; border-radius:var(--radius-sm) 0 0 var(--radius-sm); color:var(--text-bright); font-family:var(--font-mono); font-size:0.85rem; outline:none; transition:var(--transition);">
+                    <input type="text" class="chat-input-cyber" id="chatInput" placeholder="Спросите бота..."  style="flex:1; padding:12px 16px; background:rgba(0,0,0,0.4); border:1px solid var(--border); border-right:none; border-radius:var(--radius-sm) 0 0 var(--radius-sm); color:var(--text-bright); font-family:var(--font-mono); font-size:0.85rem; outline:none; transition:var(--transition);">
                     <button onclick="sendChat()" id="chatSendBtn" class="chat-send-btn" style="padding:12px 18px; background:var(--gradient-btn); border:none; border-radius:0 var(--radius-sm) var(--radius-sm) 0; color:white; cursor:pointer; font-size:1.2rem; transition:all 0.2s ease; box-shadow:0 0 15px rgba(124,58,237,0.3);">→</button>
                 </div>
             </div>
@@ -261,7 +267,7 @@
         </div>
 
         <div class="text-center mt-2">
-            <a href="/register" class="btn btn-soft-glow">Подключить (499 ₽/мес)</a>
+            <a href="/register" class="btn btn-soft-glow">Подключить (990 ₽/мес)</a>
             <p class="text-muted text-sm mt-1">7 дней бесплатно</p>
         </div>
     </div>
@@ -346,20 +352,20 @@
         <div class="tariff-badge"><span class="badge badge-trial">Пробный</span></div>
         <div class="tariff-name-grad">Пробный</div>
         <div class="tariff-price" style="font-size:2.5rem;">0 ₽<small style="font-size:0.9rem; color:var(--text-bright);">/мес</small></div>
-        <div class="tariff-features">Без скачивания FAQ</div>
+        <div class="tariff-features">FAQ онлайн на 7 дней</div>
         <a href="/register" class="btn btn-cyber-pulse w-full cyber-gradient">Выбрать</a>
     </div>
     <div class="card tariff-card">
         <div class="tariff-badge">&nbsp;</div>
         <div class="tariff-name-grad">Базовый</div>
-        <div class="tariff-price" style="font-size:2.5rem;">499 ₽<small style="font-size:0.9rem; color:var(--text-bright);">/мес</small></div>
+        <div class="tariff-price" style="font-size:2.5rem;">990 ₽<small style="font-size:0.9rem; color:var(--text-bright);">/мес</small></div>
         <div class="tariff-features">FAQ + Нейро-карточка<br>Чат на сайте</div>
         <a href="/register" class="btn btn-neon-premium w-full cyber-gradient">Выбрать</a>
     </div>
     <div class="card tariff-card">
         <div class="tariff-badge">&nbsp;</div>
         <div class="tariff-name-grad">Профессиональный</div>
-        <div class="tariff-price" style="font-size:2.5rem;">999 ₽<small style="font-size:0.9rem; color:var(--text-bright);">/мес</small></div>
+        <div class="tariff-price" style="font-size:2.5rem;">1990 ₽<small style="font-size:0.9rem; color:var(--text-bright);">/мес</small></div>
         <div class="tariff-features">Всё + VK Mini App<br>UGC-размещение</div>
         <a href="/register" class="btn btn-primary w-full cyber-gradient">Выбрать</a>
     </div>
@@ -372,6 +378,8 @@
     let currentDomain = '';
     let currentSiteId = '';
 
+    document.getElementById('chatInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') sendChat(); });
+    function askHint(question) { document.getElementById('chatInput').value = question; sendChat(); }
     function sendChat() {
         const input = document.getElementById('chatInput');
         const msg = input.value.trim();
@@ -384,12 +392,12 @@
         if (chatQuestionsLeft <= 0) {
             document.getElementById('chatInput').disabled = true;
             document.getElementById('chatSendBtn').disabled = true;
-            document.getElementById('chatCounter').textContent = 'Лимит исчерпан. Зарегистрируйтесь для продолжения.';
+            document.getElementById('chatCounter').textContent = 'Лимит исчерпан. Зарегистрируйтесь — первые 7 дней бесплатно.';
         }
         fetch('/bot/chat', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({question: msg, domain: currentDomain, site_id: currentSiteId})
+            body: JSON.stringify({question: msg, domain: currentDomain})
         })
         .then(r => r.json())
         .then(data => {
@@ -438,7 +446,7 @@
                 document.getElementById('scoreMessage').textContent = score >= 70 ? '✅ Высокая (70-100%)' : score >= 40 ? '⚠️ Средняя (40-69%)' : '🔴 Критическая (0-39%)';
                 const lossEl = document.getElementById('lossText');
                 if (score < 70) {
-                    lossEl.textContent = 'Ваш сайт не отвечает на ' + (100 - score) + '% вопросов нейросетей';
+                    lossEl.textContent = 'Вы теряете клиентов по ' + (100 - score) + '% запросов. Алиса не находит ваш сайт.';
                     lossEl.style.display = 'block';
                 } else {
                     lossEl.style.display = 'none';
@@ -487,6 +495,7 @@
     }
     setInterval(function() { currentSlide = (currentSlide + 1) % totalSlides; goToSlide(currentSlide); }, 7000);
 
+    function escapeHtml(str) { var div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
     function renderFaq(faqSubset) {
         const faqList = document.getElementById('faqList');
         let html = '';
